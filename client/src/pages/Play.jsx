@@ -13,6 +13,7 @@ import {
 import { useDisclosure } from "@chakra-ui/hooks";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Play() {
   const {
@@ -31,15 +32,22 @@ function Play() {
     onClose: onJoinModalClose,
   } = useDisclosure();
 
+  const navigate = useNavigate();
+
   const [roomCode, setRoomCode] = useState("");
 
   const joinRoom = () => {
     const username = getValues("username");
     // TODO: use roomCode and username to join room
+    const dummyRoomId = 123;
+    navigate(`/room/${dummyRoomId}/settings`);
   };
 
-  // TODO: Implement create room with username
-  const createRoom = (data) => console.log(data);
+  const createRoom = (data) => {
+    // TODO: Create room with username
+    const dummyRoomId = 123;
+    navigate(`/room/${dummyRoomId}/settings`);
+  };
 
   return (
     <Flex h="85vh" marginTop="10vh">
