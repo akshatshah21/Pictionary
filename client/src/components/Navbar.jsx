@@ -21,13 +21,13 @@ function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <Flex>
-      <Flex pos="fixed" top="1rem" right="1rem" align="center">
+    <Flex w="100%">
+      <Flex w="100%" top="1rem" right="1rem" align="center">
         {/* Desktop */}
-        <Flex display={["none", "none", "flex", "flex"]}>
+        <Flex ml="auto" display={["none", "none", "flex", "flex"]}>
           {pages.map((page) => (
             <Link to={page.link} key={page.name}>
-              <Button variant="ghost" aria-label={page.name} my={5} w="100%">
+              <Button variant="ghost" aria-label={page.name} my={4} w="100%">
                 {page.name}
               </Button>
             </Link>
@@ -42,6 +42,7 @@ function Navbar() {
           onClick={() => setIsMenuOpen(true)}
         />
         <Switch
+          ml="1"
           color="green"
           isChecked={colorMode === "dark"}
           onChange={toggleColorMode}
