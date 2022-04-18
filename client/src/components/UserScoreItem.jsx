@@ -1,10 +1,54 @@
-import { Flex, Image, Text } from "@chakra-ui/react";
+import { Flex, Image, Text, useColorModeValue } from "@chakra-ui/react";
 
-function UserScoreItem({ user }) {
+// TODO Blue border around currentDrawer
+
+function UserScoreItem({ user, rank }) {
+  let lightModeBgGradientStart = "gray.200";
+  let lightModeBgGradientEnd = "gray.200";
+  let darkModeBgGradientStart = "gray.700";
+  let darkModeBgGradientEnd = "gray.700";
+  if (rank === 1) {
+    lightModeBgGradientStart = "yellow.600";
+    lightModeBgGradientEnd = "yellow.300";
+    darkModeBgGradientStart = "yellow.300";
+    darkModeBgGradientEnd = "yellow.600";
+  } else if (rank === 2) {
+    lightModeBgGradientStart = "gray.300";
+    lightModeBgGradientEnd = "gray.500";
+    darkModeBgGradientStart = "gray.500";
+    darkModeBgGradientEnd = "gray.300";
+  } else if (rank === 3) {
+    lightModeBgGradientStart = "yellow.700";
+    lightModeBgGradientEnd = "yellow.500";
+    darkModeBgGradientStart = "yellow.900";
+    darkModeBgGradientEnd = "yellow.700";
+  }
+
+  const bgGradientStart = useColorModeValue(
+    lightModeBgGradientStart,
+    darkModeBgGradientStart
+  );
+  const bgGradientEnd = useColorModeValue(
+    lightModeBgGradientEnd,
+    darkModeBgGradientEnd
+  );
+
+  const bgGradient = `linear(to-r, ${bgGradientStart}, ${bgGradientEnd})`;
+
   return (
-    <Flex my="2" flexDir="row" justify="space-evenly" align="center">
+    <Flex
+      mx="2"
+      my="1"
+      p="1"
+      rounded="lg"
+      flexDir="row"
+      justify="flex-start"
+      gap="8"
+      align="center"
+      bgGradient={bgGradient}
+    >
       <Flex>
-        <Text fontSize="2xl">#1</Text>
+        <Text fontSize="2xl">#{rank}</Text>
       </Flex>
       <Image
         boxSize="3rem"
