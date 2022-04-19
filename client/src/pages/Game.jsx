@@ -5,9 +5,12 @@ import {
   GridItem,
   Text,
   useColorModeValue,
+  useDisclosure,
 } from "@chakra-ui/react";
 import UserScoreList from "../components/UserScoreList";
 import ChatWindow from "../components/ChatWindow";
+import ChooseWordModal from "../components/ChooseWordModal";
+import { useEffect } from "react";
 
 const dummyUsers = [
   {
@@ -88,6 +91,17 @@ function Game() {
   const scoreBgColor = useColorModeValue("orange.300", "orange.500");
   const headerBgColor = useColorModeValue("purple.300", "purple.700");
 
+  const {
+    isOpen: isChooseWordModalOpen,
+    onOpen: onChooseWordModalOpen,
+    onClose: onChooseWordModalClose,
+  } = useDisclosure();
+
+  // TODO temporary; just to see how the modal looks like
+  useEffect(() => {
+    onChooseWordModalOpen();
+  }, [onChooseWordModalOpen]);
+
   return (
     <Grid w="100%" h="100%" templateRows="1fr 11fr" p="2" gap="2">
       <GridItem fontSize="2xl">
@@ -147,6 +161,16 @@ function Game() {
           </GridItem>
         </Grid>
       </GridItem>
+
+      <ChooseWordModal
+        isOpen={isChooseWordModalOpen}
+        onWordSelect={(selectedWord) => {
+          console.log(selectedWord);
+          // TODO submit selected word
+          onChooseWordModalClose();
+        }}
+        words={["bob", "pop", "lolololololololololololololol"]}
+      />
     </Grid>
   );
 }

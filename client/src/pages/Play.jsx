@@ -102,7 +102,7 @@ function Play() {
       <Modal isOpen={isJoinModalOpen} onClose={onJoinModalClose} isCentered>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Modal Title</ModalHeader>
+          <ModalHeader>Join a Pictionary Room</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <FormControl>
