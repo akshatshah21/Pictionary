@@ -1,4 +1,4 @@
-import { Grid, GridItem, Input } from "@chakra-ui/react";
+import { Grid, GridItem, Input, useColorModeValue } from "@chakra-ui/react";
 import { useState } from "react";
 import { useEffect } from "react";
 
@@ -148,6 +148,8 @@ const dummyMessages = [
 function ChatWindow() {
   const { input, setInput } = useState("");
 
+  const inputBgColor = useColorModeValue("white", "gray.700");
+
   useEffect(() => {
     const messagesList = document.querySelector("#message-list");
     messagesList.scroll({ top: messagesList.scrollHeight, behavior: "smooth" });
@@ -171,8 +173,11 @@ function ChatWindow() {
       <GridItem my="0.5" p="1" rounded="sm">
         <Input
           id="message-input"
+          bgColor={inputBgColor}
           placeholder="Quick, enter your guess!"
           value={input}
+          p="6"
+          fontSize="lg"
           onChange={(e) => setInput(e.target.value.trim())}
         />
       </GridItem>

@@ -3,8 +3,8 @@ import { Flex, Image, Text, useColorModeValue } from "@chakra-ui/react";
 // TODO Blue border around currentDrawer
 
 function UserScoreItem({ user, rank }) {
-  let lightModeBgGradientStart = "gray.200";
-  let lightModeBgGradientEnd = "gray.200";
+  let lightModeBgGradientStart = "white";
+  let lightModeBgGradientEnd = "white";
   let darkModeBgGradientStart = "gray.700";
   let darkModeBgGradientEnd = "gray.700";
   if (rank === 1) {
@@ -38,7 +38,7 @@ function UserScoreItem({ user, rank }) {
   return (
     <Flex
       mx="2"
-      my="1"
+      my="0.5"
       p="1"
       rounded="lg"
       flexDir="row"

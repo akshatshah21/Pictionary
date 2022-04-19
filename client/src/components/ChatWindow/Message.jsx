@@ -1,13 +1,13 @@
 import { GridItem, Flex, Text, useColorModeValue } from "@chakra-ui/react";
 
 function Message({ message }) {
-  let lightModeBgColor = "gray.200";
+  let lightModeBgColor = "white";
   let darkModeBgColor = "gray.700";
   if (message.type === "correct") {
-    lightModeBgColor = "green.200";
+    lightModeBgColor = "green.300";
     darkModeBgColor = "green.700";
   } else if (message.type === "turn") {
-    lightModeBgColor = "blue.200";
+    lightModeBgColor = "blue.300";
     darkModeBgColor = "blue.700";
   }
   let bgColor = useColorModeValue(lightModeBgColor, darkModeBgColor);

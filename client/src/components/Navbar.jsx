@@ -5,6 +5,7 @@ import {
   Button,
   IconButton,
   Fade,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { useState } from "react";
@@ -20,14 +21,22 @@ function Navbar() {
   const { colorMode, toggleColorMode } = useColorMode();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const bgColor = useColorModeValue("yellow.50", "gray.900");
+
   return (
-    <Flex w="100%">
+    <Flex w="100%" h="8vh" bgColor={bgColor} boxShadow="md">
       <Flex w="100%" top="1rem" right="1rem" align="center">
         {/* Desktop */}
         <Flex ml="auto" display={["none", "none", "flex", "flex"]}>
           {pages.map((page) => (
             <Link to={page.link} key={page.name}>
-              <Button variant="ghost" aria-label={page.name} my={4} w="100%">
+              <Button
+                variant="ghost"
+                aria-label={page.name}
+                mx={2}
+                my={4}
+                w="100%"
+              >
                 {page.name}
               </Button>
             </Link>
@@ -37,12 +46,13 @@ function Navbar() {
           aria-label="Open Navbar"
           size="lg"
           mr={2}
+          ml="auto"
           icon={<HamburgerIcon />}
           display={isMenuOpen ? "none" : ["flex", "flex", "none", "none"]}
           onClick={() => setIsMenuOpen(true)}
         />
         <Switch
-          ml="1"
+          mx="2"
           color="green"
           isChecked={colorMode === "dark"}
           onChange={toggleColorMode}
@@ -62,6 +72,7 @@ function Navbar() {
           flexDir="column"
           overflowY="auto"
           display={isMenuOpen ? "flex" : "none"}
+          bgColor={bgColor}
         >
           <Flex justify="flex-end" display={["flex", "flex", "none", "none"]}>
             <IconButton

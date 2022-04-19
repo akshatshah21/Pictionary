@@ -84,8 +84,9 @@ const dummyUsers = [
 
 function Game() {
   const borderColor = useColorModeValue("gray.300", "gray.600");
-  const currentDrawerBgColor = useColorModeValue("blue.200", "blue.700");
+  const currentDrawerBgColor = useColorModeValue("blue.300", "blue.700");
   const scoreBgColor = useColorModeValue("orange.300", "orange.500");
+  const headerBgColor = useColorModeValue("purple.300", "purple.700");
 
   return (
     <Grid w="100%" h="100%" templateRows="1fr 11fr" p="2" gap="2">
@@ -102,9 +103,11 @@ function Game() {
             <Flex
               w="100%"
               h="100%"
+              bgColor={headerBgColor}
               border="1px"
               borderRadius="md"
               borderColor={borderColor}
+              px="2"
             >
               <Text my="auto">Time left: 21</Text>
               <Text my="auto" ml="auto" mr="auto">
@@ -125,17 +128,17 @@ function Game() {
         <Grid templateColumns="2fr 7fr 3fr" gap="2">
           <GridItem
             w="100%"
-            h="75vh"
+            h="80vh"
             border="1px"
             borderRadius="md"
             borderColor={borderColor}
           >
             <UserScoreList users={dummyUsers} />
           </GridItem>
-          <GridItem w="100%" h="75vh"></GridItem>
+          <GridItem w="100%" h="80vh"></GridItem>
           <GridItem
             w="100%"
-            h="75vh"
+            h="80vh"
             border="1px"
             borderRadius="md"
             borderColor={borderColor}
