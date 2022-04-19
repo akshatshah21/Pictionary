@@ -1,4 +1,4 @@
-import { Button, Flex, Input, Text } from "@chakra-ui/react";
+import { Button, Flex, Input, Text, useColorModeValue } from "@chakra-ui/react";
 import { FormControl, FormLabel, FormHelperText } from "@chakra-ui/react";
 import { PinInput, PinInputField } from "@chakra-ui/react";
 import {
@@ -16,6 +16,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Play() {
+  const bgColor = useColorModeValue("white", "gray.900");
+
   const {
     register,
     handleSubmit,
@@ -55,12 +57,11 @@ function Play() {
         marginX="auto"
         marginTop="40"
         marginBottom="auto"
-        border="1px"
-        borderRadius="md"
-        borderColor="gray.400"
-        w="40vw"
+        rounded="md"
+        w={["95vw", "75vw", "50vw"]}
         flexDir="column"
         padding="8"
+        bgColor={bgColor}
       >
         <FormControl>
           <FormLabel htmlFor="username">Username</FormLabel>

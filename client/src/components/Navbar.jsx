@@ -52,7 +52,7 @@ function Navbar() {
           onClick={() => setIsMenuOpen(true)}
         />
         <Switch
-          mx="2"
+          mx="4"
           color="green"
           isChecked={colorMode === "dark"}
           onChange={toggleColorMode}
