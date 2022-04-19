@@ -12,6 +12,7 @@ import {
   Button,
   Select,
   Textarea,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { RoomUser } from "../components/RoomUser";
@@ -28,6 +29,7 @@ const DEFAULT_ROUND_TIME = 60; // seconds
 const DEFAULT_LANGUAGE = { value: "en", name: "English" };
 
 function GameSettings() {
+  const bgColor = useColorModeValue("white", "gray.900");
   const [users, setUsers] = useState([
     { username: "Hades", avatar: "https://bit.ly/dan-abramov" },
     { username: "Hermione", avatar: "https://bit.ly/dan-abramov" },
@@ -86,8 +88,16 @@ function GameSettings() {
   // TODO Update game settings at backend
 
   return (
-    <Flex h="85vh" marginTop="10vh" justifyContent="center">
-      <Grid templateRows="4fr 1fr" templateColumns="repeat(2, 1fr)" gridGap="4">
+    <Flex h="75vh" marginTop="10vh" justifyContent="center">
+      <Grid
+        templateRows="10fr 2fr"
+        templateColumns="repeat(2, 1fr)"
+        gridGap="4"
+        w={["95vw", "75vw", "50vw"]}
+        bgColor={bgColor}
+        p="8"
+        rounded="md"
+      >
         <GridItem w="100%" h="100%">
           <Flex flexDir="column">
             <FormControl>
@@ -178,7 +188,7 @@ function GameSettings() {
           </Grid>
         </GridItem>
 
-        <GridItem w="100%" h="100%" colSpan="2">
+        <GridItem w="100%" h="fit-content" colSpan="2">
           Share link
         </GridItem>
       </Grid>
