@@ -1,4 +1,12 @@
-import { Button, Flex, Input, Text, useColorModeValue } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  HStack,
+  Icon,
+  Input,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { FormControl, FormLabel, FormHelperText } from "@chakra-ui/react";
 import { PinInput, PinInputField } from "@chakra-ui/react";
 import {
@@ -14,6 +22,8 @@ import { useDisclosure } from "@chakra-ui/hooks";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import RandomAvatarGenerator from "../components/RandomAvatarGenerator";
+import { FaHandPointRight } from "react-icons/fa";
 
 function Play() {
   const bgColor = useColorModeValue("white", "gray.900");
@@ -28,6 +38,8 @@ function Play() {
     defaultValues: { username: "wacky-pro" },
   });
 
+  const [avatar, setAvatar] = useState("");
+
   const {
     isOpen: isJoinModalOpen,
     onOpen: onJoinModalOpen,
@@ -40,13 +52,13 @@ function Play() {
 
   const joinRoom = () => {
     const username = getValues("username");
-    // TODO: use roomCode and username to join room
+    // TODO: use roomCode, username and avatar to join room
     const dummyRoomId = 123;
     navigate(`/room/${dummyRoomId}/settings`);
   };
 
   const createRoom = (data) => {
-    // TODO: Create room with username
+    // TODO: Create room with username, avatar
     const dummyRoomId = 123;
     navigate(`/room/${dummyRoomId}/settings`);
   };
@@ -55,7 +67,7 @@ function Play() {
     <Flex h="85vh" marginTop="10vh">
       <Flex
         marginX="auto"
-        marginTop="40"
+        marginTop="10"
         marginBottom="auto"
         rounded="md"
         w={["95vw", "75vw", "50vw"]}
@@ -64,22 +76,46 @@ function Play() {
         bgColor={bgColor}
       >
         <FormControl>
-          <FormLabel htmlFor="username">Username</FormLabel>
-          <Input
-            placeholder="Username"
-            size="lg"
-            {...register("username", { required: true })}
-          />
+          <HStack>
+            <FormLabel
+              fontSize="xl"
+              htmlFor="username"
+              w="fit-content"
+              display="flex"
+            >
+              Username{" "}
+              <Icon
+                mt="1"
+                ml="2"
+                as={FaHandPointRight}
+                verticalAlign="baseline"
+              />
+            </FormLabel>
+            <Input
+              placeholder="Username"
+              size="lg"
+              {...register("username", { required: true })}
+            />
+          </HStack>
           {errors.username?.type === "required" ? (
-            <Text fontSize="sm" color="tomato">
+            <Text fontSize="sm" color="tomato" textAlign="end">
               Go on, pick a username. Don&apos;t be shy!
             </Text>
           ) : (
-            <FormHelperText>Use your imagination!</FormHelperText>
+            <FormHelperText textAlign="end">
+              Use your imagination!
+            </FormHelperText>
           )}
         </FormControl>
+
         {/* TODO Avatar Input */}
-        <Flex>Avatar Input</Flex>
+        <HStack justify="center">
+          <FormLabel fontSize="xl">
+            Choose your avatar <Icon mt="1" as={FaHandPointRight} />
+          </FormLabel>
+
+          <RandomAvatarGenerator onAvatarChange={(url) => setAvatar(url)} />
+        </HStack>
         <Flex justifyContent="space-evenly">
           <Button
             type="submit"
