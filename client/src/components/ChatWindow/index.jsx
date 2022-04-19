@@ -1,4 +1,10 @@
-import { Grid, GridItem, Input, useColorModeValue } from "@chakra-ui/react";
+import {
+  Flex,
+  Grid,
+  GridItem,
+  Input,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { useEffect } from "react";
 
@@ -163,21 +169,21 @@ function ChatWindow() {
       templateColumns="minmax(0, 1fr)"
       justify="stretch"
       h="100%"
-      p="1"
-      overflow="auto"
+      p="md:1"
     >
-      {dummyMessages.map((message) => (
-        <Message key={message.timestamp} message={message} />
-      ))}
-
+      <Flex flexDir="column" overflow="auto">
+        {dummyMessages.map((message) => (
+          <Message key={message.timestamp} message={message} />
+        ))}
+      </Flex>
       <GridItem my="0.5" p="1" rounded="sm">
         <Input
           id="message-input"
           bgColor={inputBgColor}
-          placeholder="Quick, enter your guess!"
+          placeholder="Take a guess!"
           value={input}
-          p="6"
-          fontSize="lg"
+          p="1 md:6"
+          fontSize="md:lg"
           onChange={(e) => setInput(e.target.value.trim())}
         />
       </GridItem>

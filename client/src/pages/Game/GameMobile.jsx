@@ -7,10 +7,9 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import UserScoreList from "../components/UserScoreList";
-import ChatWindow from "../components/ChatWindow";
-import ChooseWordModal from "../components/ChooseWordModal";
-import { useEffect } from "react";
+import UserScoreList from "../../components/UserScoreList";
+import ChatWindow from "../../components/ChatWindow";
+import ChooseWordModal from "../../components/ChooseWordModal";
 
 const dummyUsers = [
   {
@@ -85,7 +84,7 @@ const dummyUsers = [
   },
 ];
 
-function Game() {
+function GameMobile() {
   const borderColor = useColorModeValue("gray.300", "gray.600");
   const currentDrawerBgColor = useColorModeValue("blue.300", "blue.700");
   const scoreBgColor = useColorModeValue("orange.300", "orange.500");
@@ -97,71 +96,49 @@ function Game() {
     onClose: onChooseWordModalClose,
   } = useDisclosure();
 
-  // TODO temporary; just to see how the modal looks like
-  useEffect(() => {
-    onChooseWordModalOpen();
-  }, [onChooseWordModalOpen]);
-
   return (
-    <Grid w="100%" h="100%" templateRows="1fr 11fr" p="2" gap="2">
-      <GridItem fontSize="2xl">
-        <Grid h="100%" templateColumns="2fr 7fr 3fr" gap="2">
-          <GridItem h="100%">
-            <Flex w="100%" h="100%" bgColor={currentDrawerBgColor} rounded="md">
-              <Text textAlign="center" m="auto">
-                ABC is drawing
-              </Text>
-            </Flex>
-          </GridItem>
-          <GridItem h="100%">
-            <Flex
-              w="100%"
-              h="100%"
-              bgColor={headerBgColor}
-              border="1px"
-              borderRadius="md"
-              borderColor={borderColor}
-              px="2"
-            >
-              <Text my="auto">Time left: 21</Text>
-              <Text my="auto" ml="auto" mr="auto">
-                _ _ _ _ _ _ _ _
-              </Text>
-            </Flex>
-          </GridItem>
-          <GridItem h="100%">
-            <Flex w="100%" h="100%" bgColor={scoreBgColor} rounded="md">
-              <Text m="auto" textAlign="center">
-                Your Score: 2108
-              </Text>
-            </Flex>
-          </GridItem>
-        </Grid>
-      </GridItem>
-      <GridItem>
-        <Grid templateColumns="2fr 7fr 3fr" gap="2">
-          <GridItem
+    <>
+      <Grid w="100%" h="60vh" templateRows="1fr 7fr 4fr" gap="2">
+        <GridItem fontSize="lg" h="100%">
+          <Flex
+            flexDir="column"
             w="100%"
-            h="80vh"
+            h="100%"
+            bgColor={headerBgColor}
             border="1px"
             borderRadius="md"
             borderColor={borderColor}
+            px="2"
           >
-            <UserScoreList users={dummyUsers} />
-          </GridItem>
-          <GridItem w="100%" h="80vh"></GridItem>
-          <GridItem
-            w="100%"
-            h="80vh"
-            border="1px"
-            borderRadius="md"
-            borderColor={borderColor}
-          >
-            <ChatWindow />
-          </GridItem>
-        </Grid>
-      </GridItem>
+            <Text m="auto">Time left: 21</Text>
+            <Text m="auto">_ _ _ _ _ _ _ _</Text>
+          </Flex>
+        </GridItem>
 
+        <GridItem h="100%">
+          <Flex flexDir="column" h="100%">
+            <Text m="auto">Canvas here</Text>
+            <Text m="auto">Canvas here</Text>
+            <Text m="auto">Canvas here</Text>
+            <Text m="auto">Canvas here</Text>
+            <Text m="auto">Canvas here</Text>
+            <Text m="auto">Canvas here</Text>
+            <Text m="auto">Canvas here</Text>
+            <Text m="auto">Canvas here</Text>
+          </Flex>
+        </GridItem>
+
+        <GridItem w="100%" h="20vh">
+          <Grid templateColumns="1fr 1fr" gap={2}>
+            <GridItem w="100%" h="20vh">
+              <UserScoreList users={dummyUsers} />
+            </GridItem>
+            <GridItem h="20vh">
+              <ChatWindow />
+            </GridItem>
+          </Grid>
+        </GridItem>
+      </Grid>
       <ChooseWordModal
         isOpen={isChooseWordModalOpen}
         onWordSelect={(selectedWord) => {
@@ -171,8 +148,8 @@ function Game() {
         }}
         words={["bob", "pop", "lolololololololololololololol"]}
       />
-    </Grid>
+    </>
   );
 }
 
-export default Game;
+export default GameMobile;

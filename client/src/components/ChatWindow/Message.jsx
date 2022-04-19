@@ -14,7 +14,7 @@ function Message({ message }) {
 
   return (
     <GridItem my="0.5" p="1" rounded="sm" bgColor={bgColor}>
-      <Flex>
+      <Flex fontSize={["sm", "md"]}>
         <Flex ml="1">
           <Text fontWeight="bold">{message.username}:</Text>
         </Flex>

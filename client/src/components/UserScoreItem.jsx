@@ -37,7 +37,7 @@ function UserScoreItem({ user, rank }) {
 
   return (
     <Flex
-      mx="2"
+      mx="md:2"
       my="0.5"
       p="1"
       rounded="lg"
@@ -48,16 +48,18 @@ function UserScoreItem({ user, rank }) {
       bgGradient={bgGradient}
     >
       <Flex>
-        <Text fontSize="2xl">#{rank}</Text>
+        <Text fontSize="sm md:2xl">#{rank}</Text>
       </Flex>
       <Image
-        boxSize="3rem"
+        boxSize="3em"
         rounded="full"
         src={user.avatar}
         alt={`${user.username}'s Avatar`}
       />
       <Flex flexDir="column">
-        <Text fontSize="sm">{user.username}</Text>
+        <Text fontSize="sm" isTruncated>
+          {user.username}
+        </Text>
         <Text fontSize="sm">Score: {user.score}</Text>
       </Flex>
     </Flex>
