@@ -1,5 +1,4 @@
 import {
-  Center,
   Flex,
   Grid,
   GridItem,
@@ -10,6 +9,7 @@ import {
 import UserScoreList from "../../components/UserScoreList";
 import ChatWindow from "../../components/ChatWindow";
 import ChooseWordModal from "../../components/ChooseWordModal";
+import DrawingBoard from "../../components/DrawingBoard";
 
 const dummyUsers = [
   {
@@ -117,14 +117,7 @@ function GameMobile() {
 
         <GridItem h="100%">
           <Flex flexDir="column" h="100%">
-            <Text m="auto">Canvas here</Text>
-            <Text m="auto">Canvas here</Text>
-            <Text m="auto">Canvas here</Text>
-            <Text m="auto">Canvas here</Text>
-            <Text m="auto">Canvas here</Text>
-            <Text m="auto">Canvas here</Text>
-            <Text m="auto">Canvas here</Text>
-            <Text m="auto">Canvas here</Text>
+            <DrawingBoard />
           </Flex>
         </GridItem>
 

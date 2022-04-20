@@ -23,12 +23,10 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/how" element={<HowToPlay />} />
           <Route path="/play" element={<Play />} />
-          {/* <Route path="/room/:roomId" element={<Game />} /> */}
-          <Route path="/room/:roomId" element={<GameDemo />} />
+          <Route path="/room/:roomId" element={<Game />} />
           <Route path="/room/:roomId/settings" element={<GameSettings />} />
         </Routes>
       </Flex>
-
     </BrowserRouter>
   );
 }

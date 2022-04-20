@@ -9,6 +9,7 @@ import {
 import UserScoreList from "../../components/UserScoreList";
 import ChatWindow from "../../components/ChatWindow";
 import ChooseWordModal from "../../components/ChooseWordModal";
+import DrawingBoard from "../../components/DrawingBoard";
 
 const dummyUsers = [
   {
@@ -140,7 +141,9 @@ function GameDesktop() {
           >
             <UserScoreList users={dummyUsers} />
           </GridItem>
-          <GridItem w="100%" h="80vh"></GridItem>
+          <GridItem w="100%" h="80vh">
+            <DrawingBoard />
+          </GridItem>
           <GridItem
             w="100%"
             h="80vh"
