@@ -5,7 +5,13 @@ const Disconnect = require('./controllers/Disconnect');
 const Game = require('./controllers/Game');
 
 module.exports.init = (server) => {
-    const io = socketio(server);
+    const io = socketio(server, {
+        cors: {
+            origin:'http://localhost:3000', 
+            credentials:true,            //access-control-allow-credentials:true
+            optionSuccessStatus:200
+        }
+    });
     io.on('connection', (socket) => {
         console.log('connected user');
         socket.on('newPrivateRoom', (player) => new Room(io, socket).createPrivateRoom(player));

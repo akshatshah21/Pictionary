@@ -68,9 +68,10 @@ function Play() {
       name: data.username,
       avatar,
     });
-    socket.on("newPrivateRoom", ({ roomId }) =>
-      navigate(`/room/${roomId}/settings`)
-    );
+    socket.on("newPrivateRoom", (data) => {
+      console.log(data);
+      navigate(`/room/${data.gameId}/settings`);
+    });
   };
 
   return (

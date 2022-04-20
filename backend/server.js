@@ -13,7 +13,7 @@ const app = express();
 
 // CORS
 // TODO Make this more secure
-const corsOptions ={
+const corsOptions = {
     origin:'http://localhost:3000', 
     credentials:true,            //access-control-allow-credentials:true
     optionSuccessStatus:200
