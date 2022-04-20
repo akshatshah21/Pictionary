@@ -20,13 +20,17 @@ import {
 } from "@chakra-ui/react";
 import { useDisclosure } from "@chakra-ui/hooks";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RandomAvatarGenerator from "../components/RandomAvatarGenerator";
 import { FaHandPointRight } from "react-icons/fa";
 
+import { SocketContext } from "../App";
+
 function Play() {
   const bgColor = useColorModeValue("white", "gray.900");
+
+  const socket = useContext(SocketContext);
 
   const {
     register,
