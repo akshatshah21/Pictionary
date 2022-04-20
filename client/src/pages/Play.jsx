@@ -61,6 +61,7 @@ function Play() {
     setCurrentPlayer({
       name: username,
       avatar,
+      isAdmin: false,
     });
 
     socket.emit("joinRoom", {
@@ -78,6 +79,7 @@ function Play() {
     const _currentPlayer = {
       name: data.username,
       avatar,
+      isAdmin: true,
     };
     setCurrentPlayer(_currentPlayer);
 
@@ -138,7 +140,6 @@ function Play() {
           )}
         </FormControl>
 
-        {/* TODO Avatar Input */}
         <HStack justify="center">
           <FormLabel fontSize="xl">
             Choose your avatar <Icon mt="1" as={FaHandPointRight} />

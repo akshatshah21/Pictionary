@@ -8,12 +8,17 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 
-export function SliderThumbWithTooltip({ initialValue, onChangeEnd }) {
+export function SliderThumbWithTooltip({
+  initialValue,
+  onChangeEnd,
+  isDisabled,
+}) {
   const [sliderValue, setSliderValue] = useState(initialValue);
   const [showTooltip, setShowTooltip] = useState(false);
   return (
     <Slider
       id="slider"
+      isDisabled={isDisabled}
       defaultValue={initialValue}
       min={1}
       max={100}

@@ -50,7 +50,6 @@ function GameSettings() {
 
   useEffect(() => {
     socket.once("otherPlayers", (otherPlayers) => {
-      console.log(otherPlayers);
       setPlayers(
         [currentPlayer, ...otherPlayers].sort(alphabeticalSortCompare)
       );
@@ -66,7 +65,40 @@ function GameSettings() {
   }, [socket, setPlayers, currentPlayer]);
 
   // TODO probably add listener for leaveRoom to update users
-  // TODO Update game settings at backend
+
+  useEffect(() => {
+    if (currentPlayer.isAdmin) {
+      socket.emit("settingsUpdate", {
+        rounds,
+        time: roundTime,
+        probability: customWordsProb,
+        customWords: customWordsText.replace(/\s+/g, " ").trim().split(" "),
+        language: language,
+      });
+    }
+  }, [
+    socket,
+    currentPlayer,
+    rounds,
+    roundTime,
+    customWordsProb,
+    customWordsText,
+    language,
+  ]);
+
+  useEffect(() => {
+    function onSettingsUpdate(data) {
+      console.log(data);
+      setRounds(data.rounds);
+      setRoundTime(data.time);
+      setCustomWordsProb(data.probability);
+      setLanguage(data.language);
+    }
+
+    socket.on("settingsUpdate", onSettingsUpdate);
+
+    return () => socket.off("settingsUpdate", onSettingsUpdate);
+  }, [socket, setRounds, setRoundTime, setCustomWordsProb, setLanguage]);
 
   return (
     <Flex h="75vh" marginTop="10vh" justifyContent="center">
@@ -86,6 +118,7 @@ function GameSettings() {
                 <FormLabel htmlFor="rounds">Number of Rounds</FormLabel>
                 <NumberInput
                   allowMouseWheel
+                  isDisabled={!currentPlayer.isAdmin}
                   defaultValue={DEFAULT_ROUNDS}
                   min={1}
                   step={1}
@@ -103,6 +136,7 @@ function GameSettings() {
                 <FormLabel htmlFor="seconds">Seconds per Round</FormLabel>
                 <NumberInput
                   allowMouseWheel
+                  isDisabled={!currentPlayer.isAdmin}
                   defaultValue={DEFAULT_ROUND_TIME}
                   min={10}
                   max={120}
@@ -120,6 +154,7 @@ function GameSettings() {
               <Flex justify="space-between" my="4">
                 <FormLabel>Language</FormLabel>
                 <Select
+                  isDisabled={!currentPlayer.isAdmin}
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
                 >
@@ -134,6 +169,7 @@ function GameSettings() {
               <Flex my="4">
                 <FormLabel>Custom Words</FormLabel>
                 <Textarea
+                  isDisabled={!currentPlayer.isAdmin}
                   value={customWordsText}
                   onChange={(e) => setCustomWordsText(e.target.value)}
                   placeholder="supercalifragilisticexpialidocious sesquipedalophobia hippopotomonstrosesquippedaliophobia bob"
@@ -144,19 +180,21 @@ function GameSettings() {
               <FormLabel>Probability of Custom Words</FormLabel>
               <SliderThumbWithTooltip
                 initialValue={DEFAULT_CUSTOM_WORDS_PROB}
+                isDisabled={!currentPlayer.isAdmin}
                 onChangeEnd={(percent) => setCustomWordsProb(percent / 100)}
               />
-
-              <Button
-                my="4"
-                w="100%"
-                onClick={() => {
-                  console.log("Start game");
-                  // TODO Start game
-                }}
-              >
-                Start Game
-              </Button>
+              {currentPlayer.isAdmin && (
+                <Button
+                  my="4"
+                  w="100%"
+                  onClick={() => {
+                    console.log("Start game");
+                    // TODO Start game
+                  }}
+                >
+                  Start Game
+                </Button>
+              )}
             </FormControl>
           </Flex>
         </GridItem>

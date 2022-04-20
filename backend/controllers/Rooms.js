@@ -12,8 +12,8 @@ class Room {
         const { socket } = this;
         const id = nanoid();
         games[id] = {
-            rounds: 2,
-            time: 40 * 1000,
+            rounds: 5,
+            time: 60 * 1000,
             customWords: [],
             language: 'English',
         };
@@ -21,7 +21,6 @@ class Room {
         games[id][socket.id].score = 0;
         games[id][socket.id].name = player.name;
         games[id][socket.id].avatar = player.avatar;
-        console.log(player.name);
         socket.player = player;
         socket.roomID = id;
         socket.join(id);
@@ -40,7 +39,12 @@ class Room {
         socket.join(roomID);
         socket.roomID = roomID;
         socket.to(roomID).emit('joinRoom', data.player);
-        console.log("joinRoom", data.player.name);
+        socket.emit("settingsUpdate", {
+            time: games[roomID].time,
+            rounds: games[roomID].rounds,
+            probability: games[roomID].probability,
+            language: games[roomID].language,
+        })
         socket.emit('otherPlayers',
             players.reduce((acc, id) => {
                 if (socket.id !== id) {
@@ -60,7 +64,6 @@ class Room {
         games[socket.roomID].customWords = customWords;
         games[socket.roomID].language = data.language;
         socket.to(socket.roomID).emit('settingsUpdate', rest);
-        console.log(games[socket.roomID]);
     }
 }
 
