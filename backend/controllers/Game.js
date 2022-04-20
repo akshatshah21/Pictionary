@@ -1,4 +1,4 @@
-const leven = require('leven');
+const leven = require("leven");
 const GraphemeSplitter = require('grapheme-splitter');
 const {
     get3Words,

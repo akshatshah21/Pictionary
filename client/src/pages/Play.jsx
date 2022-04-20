@@ -63,8 +63,14 @@ function Play() {
 
   const createRoom = (data) => {
     // TODO: Create room with username, avatar
-    const dummyRoomId = 123;
-    navigate(`/room/${dummyRoomId}/settings`);
+
+    socket.emit("newPrivateRoom", {
+      name: data.username,
+      avatar,
+    });
+    socket.on("newPrivateRoom", ({ roomId }) =>
+      navigate(`/room/${roomId}/settings`)
+    );
   };
 
   return (
