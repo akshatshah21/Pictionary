@@ -6,7 +6,7 @@ class Disconnect {
         this.socket = socket;
     }
 
-    onDisconnect() {
+    async onDisconnect() {
         const { io, socket } = this;
         const { roomID } = socket;
         if (socket.player) {
@@ -16,9 +16,15 @@ class Disconnect {
         if (games[roomID]) {
             if (games[roomID][socket.id].score === 0) delete games[roomID][socket.id];
             if (getPlayersCount(roomID) === 0) delete games[roomID];
-            if (io.in(roomID).sockets.sockets.size === 1) {
+
+            // Temp fix
+            if (await io.in(roomID).fetchSockets().size === 1) {
                 io.to(roomID).emit('endGame', { stats: games[roomID] });
             }
+            
+            // if (io.in(roomID).sockets.sockets.size === 1) {
+            //     io.to(roomID).emit('endGame', { stats: games[roomID] });
+            // }
         }
     }
 }

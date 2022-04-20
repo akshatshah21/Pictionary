@@ -19,7 +19,7 @@ class Room {
         games[id][socket.id].score = 0;
         games[id][socket.id].name = player.name;
         games[id][socket.id].avatar = player.avatar;
-        // console.log(games);
+        console.log(player.name);
         socket.player = player;
         socket.roomID = id;
         socket.join(id);

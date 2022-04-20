@@ -62,15 +62,13 @@ function Play() {
   };
 
   const createRoom = (data) => {
-    // TODO: Create room with username, avatar
-
     socket.emit("newPrivateRoom", {
       name: data.username,
       avatar,
     });
+
     socket.on("newPrivateRoom", (data) => {
-      console.log(data);
-      navigate(`/room/${data.gameId}/settings`);
+      navigate(`/room/${data.gameID}/settings`);
     });
   };
 
