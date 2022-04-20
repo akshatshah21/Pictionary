@@ -14,7 +14,9 @@ import {
   Textarea,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useContext, useEffect } from "react";
 import { useState } from "react";
+import { CurrentPlayerContext, PlayersContext, SocketContext } from "../App";
 import { RoomUser } from "../components/RoomUser";
 import { SliderThumbWithTooltip } from "../components/SliderThumbWithTooltip";
 
@@ -28,52 +30,11 @@ const DEFAULT_ROUNDS = 5;
 const DEFAULT_ROUND_TIME = 60; // seconds
 const DEFAULT_LANGUAGE = { value: "en", name: "English" };
 
+const alphabeticalSortCompare = (playerA, playerB) =>
+  playerA.name <= playerB.name;
+
 function GameSettings() {
   const bgColor = useColorModeValue("white", "gray.900");
-  const [users, setUsers] = useState([
-    { username: "Hades", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hermione", avatar: "https://bit.ly/dan-abramov" },
-    { username: "leo", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Crayon", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-    { username: "Hitman", avatar: "https://bit.ly/dan-abramov" },
-  ]);
   const [rounds, setRounds] = useState(DEFAULT_ROUNDS);
   const [roundTime, setRoundTime] = useState(DEFAULT_ROUND_TIME);
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE.value);
@@ -83,7 +44,27 @@ function GameSettings() {
     DEFAULT_CUSTOM_WORDS_PROB / 100
   );
 
-  // TODO probably add listener for joinRoom to update users
+  const socket = useContext(SocketContext);
+  const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
+  const [players, setPlayers] = useContext(PlayersContext);
+
+  useEffect(() => {
+    socket.once("otherPlayers", (otherPlayers) => {
+      console.log(otherPlayers);
+      setPlayers(
+        [currentPlayer, ...otherPlayers].sort(alphabeticalSortCompare)
+      );
+    });
+
+    function onPlayerJoin(player) {
+      setPlayers((prev) => [...prev, player].sort(alphabeticalSortCompare));
+    }
+
+    socket.on("joinRoom", onPlayerJoin);
+
+    return () => socket.off("joinRoom", onPlayerJoin);
+  }, [socket, setPlayers, currentPlayer]);
+
   // TODO probably add listener for leaveRoom to update users
   // TODO Update game settings at backend
 
@@ -139,7 +120,6 @@ function GameSettings() {
               <Flex justify="space-between" my="4">
                 <FormLabel>Language</FormLabel>
                 <Select
-                  defaultValue={DEFAULT_LANGUAGE.value}
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
                 >
@@ -182,9 +162,8 @@ function GameSettings() {
         </GridItem>
         <GridItem w="100%" h="100%" overflow="auto">
           <Grid templateColumns="repeat(4, 1fr)" gridGap="2">
-            {users.map((user) => (
-              <RoomUser key={user.username} user={user} />
-            ))}
+            {players &&
+              players.map((user) => <RoomUser key={user.name} user={user} />)}
           </Grid>
         </GridItem>
 

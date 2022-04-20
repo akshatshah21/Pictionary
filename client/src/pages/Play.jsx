@@ -25,12 +25,14 @@ import { useNavigate } from "react-router-dom";
 import RandomAvatarGenerator from "../components/RandomAvatarGenerator";
 import { FaHandPointRight } from "react-icons/fa";
 
-import { SocketContext } from "../App";
+import { CurrentPlayerContext, PlayersContext, SocketContext } from "../App";
 
 function Play() {
   const bgColor = useColorModeValue("white", "gray.900");
 
   const socket = useContext(SocketContext);
+  const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
+  const [players, setPlayers] = useContext(PlayersContext);
 
   const {
     register,
@@ -56,12 +58,31 @@ function Play() {
 
   const joinRoom = () => {
     const username = getValues("username");
-    // TODO: use roomCode, username and avatar to join room
-    const dummyRoomId = 123;
-    navigate(`/room/${dummyRoomId}/settings`);
+    setCurrentPlayer({
+      name: username,
+      avatar,
+    });
+
+    socket.emit("joinRoom", {
+      id: roomCode,
+      player: {
+        name: username,
+        avatar,
+      },
+    });
+
+    navigate(`/room/${roomCode}/settings`);
   };
 
   const createRoom = (data) => {
+    const _currentPlayer = {
+      name: data.username,
+      avatar,
+    };
+    setCurrentPlayer(_currentPlayer);
+
+    setPlayers([_currentPlayer]);
+
     socket.emit("newPrivateRoom", {
       name: data.username,
       avatar,
@@ -159,7 +180,6 @@ function Play() {
                   size="lg"
                   value={roomCode}
                   onChange={(value) => {
-                    console.log(value);
                     setRoomCode(value);
                   }}
                 >
@@ -186,7 +206,9 @@ function Play() {
             >
               Close
             </Button>
-            <Button colorScheme="green">Join</Button>
+            <Button colorScheme="green" onClick={joinRoom}>
+              Join
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

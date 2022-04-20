@@ -1,4 +1,6 @@
-const { nanoid } = require('nanoid');
+const { customAlphabet } = require('nanoid');
+const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+const nanoid = customAlphabet(alphabet, 6);
 
 class Room {
     constructor(io, socket) {
@@ -8,7 +10,7 @@ class Room {
 
     createPrivateRoom(player) {
         const { socket } = this;
-        const id = nanoid(15);
+        const id = nanoid();
         games[id] = {
             rounds: 2,
             time: 40 * 1000,
@@ -38,6 +40,7 @@ class Room {
         socket.join(roomID);
         socket.roomID = roomID;
         socket.to(roomID).emit('joinRoom', data.player);
+        console.log("joinRoom", data.player.name);
         socket.emit('otherPlayers',
             players.reduce((acc, id) => {
                 if (socket.id !== id) {

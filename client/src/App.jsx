@@ -13,10 +13,14 @@ import bgDark from "./bg-dark.png";
 import { Flex, useColorModeValue } from "@chakra-ui/react";
 
 export const SocketContext = createContext();
+export const PlayersContext = createContext();
+export const CurrentPlayerContext = createContext();
 
 function App() {
   const bgImg = useColorModeValue(bgLight, bgDark);
   const [socket, setSocket] = useState(null);
+  const currentPlayerState = useState();
+  const playersState = useState([]);
 
   useEffect(() => {
     const newSocket = io(`http://${window.location.hostname}:5000`); // TODO refactor to ENV var
@@ -26,19 +30,26 @@ function App() {
 
   return (
     <SocketContext.Provider value={socket}>
-      <BrowserRouter>
-        <Flex flexDir="column" h="100vh" bgImage={bgImg}>
-          <Navbar />
+      <PlayersContext.Provider value={currentPlayerState}>
+        <CurrentPlayerContext.Provider value={playersState}>
+          <BrowserRouter>
+            <Flex flexDir="column" h="100vh" bgImage={bgImg}>
+              <Navbar />
 
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/how" element={<HowToPlay />} />
-            <Route path="/play" element={<Play />} />
-            <Route path="/room/:roomId" element={<Game />} />
-            <Route path="/room/:roomId/settings" element={<GameSettings />} />
-          </Routes>
-        </Flex>
-      </BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/how" element={<HowToPlay />} />
+                <Route path="/play" element={<Play />} />
+                <Route path="/room/:roomId" element={<Game />} />
+                <Route
+                  path="/room/:roomId/settings"
+                  element={<GameSettings />}
+                />
+              </Routes>
+            </Flex>
+          </BrowserRouter>
+        </CurrentPlayerContext.Provider>
+      </PlayersContext.Provider>
     </SocketContext.Provider>
   );
 }

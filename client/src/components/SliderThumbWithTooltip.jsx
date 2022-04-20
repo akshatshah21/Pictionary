@@ -17,7 +17,6 @@ export function SliderThumbWithTooltip({ initialValue, onChangeEnd }) {
       defaultValue={initialValue}
       min={1}
       max={100}
-      nmn
       onChange={(v) => setSliderValue(v)}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
