@@ -53,21 +53,21 @@ class Game {
     }
 
     async giveTurnTo(players, i) {
-        const { io, socket } = this;
-        const { roomID } = socket;
-        const { time } = games[roomID];
-        const player = players[i];
-        const prevPlayer = players[(i - 1 + players.length) % players.length];
-        const drawer = io.of('/').sockets.get(player);
-        if (!drawer || !games[roomID]) return;
-        this.resetGuessedFlag(players);
-        games[roomID].totalGuesses = 0;
-        games[roomID].currentWord = '';
-        games[roomID].drawer = player;
-        io.to(prevPlayer).emit('disableCanvas');
-        io.in(roomID).emit('choosing', { name: drawer.player.name });
-        io.to(player).emit('chooseWord', get3Words(roomID));
         try {
+            const { io, socket } = this;
+            const { roomID } = socket;
+            const { time } = games[roomID];
+            const player = players[i];
+            const prevPlayer = players[(i - 1 + players.length) % players.length];
+            const drawer = io.of('/').sockets.get(player);
+            if (!drawer || !games[roomID]) return;
+            this.resetGuessedFlag(players);
+            games[roomID].totalGuesses = 0;
+            games[roomID].currentWord = '';
+            games[roomID].drawer = player;
+            io.to(prevPlayer).emit('disableCanvas');
+            io.in(roomID).emit('choosing', { name: drawer.player.name });
+            io.to(player).emit('chooseWord', get3Words(roomID));
             const word = await this.chosenWord(player);
             games[roomID].currentWord = word;
             io.to(roomID).emit('clearCanvas');

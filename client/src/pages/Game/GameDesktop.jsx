@@ -108,7 +108,7 @@ function GameDesktop() {
             <UserScoreList users={players} />
           </GridItem>
           <GridItem w="100%" h="80vh">
-            <DrawingBoard />
+            <DrawingBoard turnPlayer={turnPlayer}/>
           </GridItem>
           <GridItem
             w="100%"

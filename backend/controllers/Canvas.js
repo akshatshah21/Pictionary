@@ -6,6 +6,8 @@ class Canvas {
 
     broadcastDrawing(data) {
         const { socket } = this;
+        console.log("roomID",socket.roomID)
+        console.log("canvas-controller")
         socket.broadcast.to(socket.roomID).emit('drawing', data);
     }
 

@@ -1,4 +1,4 @@
-import { useContext, useState, useRef } from "react"
+import { useContext, useState, useRef, useEffect } from "react"
 import { Flex } from "@chakra-ui/react";
 import { Button } from '@chakra-ui/react'
 import { Stack } from '@chakra-ui/react'
@@ -7,8 +7,9 @@ import { SocketContext } from "../App";
 import { BsEraserFill } from 'react-icons/bs';
 import {GoPrimitiveDot} from 'react-icons/go';
 import {ImBin} from 'react-icons/im';
+import { CurrentPlayerContext } from "../App";
 
-function DrawingBoard() {
+function DrawingBoard({turnPlayer}) {
     const colorClasses = [
         "white",
         "grey",
@@ -26,21 +27,26 @@ function DrawingBoard() {
     const socket = useContext(SocketContext);
     const canvasRef = useRef(null);
     const [sColor, setSColor] = useState("red");
+		// const [updateCanvas, setUpdateCanvas] = useState("");
     function changeColor(color) {
         canvasRef.current.eraseMode(false);
         setSColor(color);
     }
 
-    const onCanvasChange = () => {
-        console.log("hello", canvasRef.current.exportImage('png'))
-        // socket.emit('drawing', {
-        //     // ref: ref
-        // });
+    const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
+		console.log(currentPlayer['name'], " == ", turnPlayer)
+		async function updateCanvas(){
+			// console.log("working hellofflfllfl")
+			socket.emit('drawing', {
+            canvasBase64: await canvasRef.current.exportPaths()
+						// data: "hello0000"
+        });
     
-        // socket.on("drawing", (data) => {
-        //   navigate(`/room/${data.gameID}/settings`);
-        // });
-    };
+			socket.on("drawing", (data) => {
+					canvasRef.current.loadPaths(data['canvasBase64'])
+					// console.log("listen", data['canvasBase64'])
+			});
+		}
     
 
     
@@ -59,7 +65,8 @@ function DrawingBoard() {
                 height="100%"
                 strokeWidth={strokeWidth}
                 strokeColor={sColor}
-                onStroke={()=>onCanvasChange()}
+								allowOnlyPointerType = {"pen"}
+                onStroke={()=>updateCanvas()}
             />
             <Stack spacing={2} direction="row" align="center" m="10px">
                 {colorClasses.map((color) => (
