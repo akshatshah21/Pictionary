@@ -9,7 +9,7 @@ import {GoPrimitiveDot} from 'react-icons/go';
 import {ImBin} from 'react-icons/im';
 import { CurrentPlayerContext } from "../App";
 
-function DrawingBoard({turnPlayer}) {
+function DrawingBoard(canvasEnabled) {
     const colorClasses = [
         "white",
         "grey",
@@ -34,7 +34,17 @@ function DrawingBoard({turnPlayer}) {
     }
 
     const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
-		console.log(currentPlayer['name'], " == ", turnPlayer)
+		useEffect(() => {
+			
+			if(canvasEnabled){
+				canvasRef.current.allowOnlyPointerType = 'all'
+			}
+			else{
+				canvasRef.current.allowOnlyPointerType = "pen"
+			}
+	
+		}, []);
+		// console.log(currentPlayer['name'], " == ", turnPlayer)
 		async function updateCanvas(){
 			// console.log("working hellofflfllfl")
 			socket.emit('drawing', {

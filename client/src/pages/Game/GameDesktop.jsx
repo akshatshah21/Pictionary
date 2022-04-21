@@ -42,7 +42,7 @@ function GameDesktop() {
 
   useEffect(() => {
     const onChoosing = ({ name }) => {
-      console.log(name);
+      console.log("from game.jsx ", name);
       setTurnPlayer(name);
       setTurnPlayerStatus("is choosing a word");
     };
@@ -181,7 +181,7 @@ function GameDesktop() {
             <UserScoreList users={players} />
           </GridItem>
           <GridItem w="100%" h="80vh">
-            <DrawingBoard turnPlayer={turnPlayer}/>
+            <DrawingBoard canvasEnabled={turnPlayer === currentPlayer.name}/>
           </GridItem>
           <GridItem
             w="100%"
