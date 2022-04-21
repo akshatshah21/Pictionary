@@ -7,9 +7,9 @@ export function RoomUser({ user }) {
         borderRadius="full"
         boxSize="5em"
         src={user.avatar}
-        alt={`${user.username}'s Avatar`}
+        alt={`${user.name}'s Avatar`}
       />
-      <Text>{user.username}</Text>
+      <Text>{user.name}</Text>
     </Flex>
   );
 }
