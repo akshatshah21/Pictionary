@@ -32,17 +32,19 @@ function GameDesktop() {
   const [wordOptions, setWordOptions] = useState(null);
   const [roundTime, setRoundTime] = useState(null);
 
+  const [isCanvasEnabled, setIsCanvasEnabled] = useState(false);
+
   const [hints, setHints] = useState(null);
   const [displayedHint, setDisplayedHint] = useState(null);
   const [effectsWithTime, setEffectsWithTime] = useState(soundEffectsWithTime);
 
   const socket = useContext(SocketContext);
-  const [players, setPlayers] = useContext(PlayersContext);
+  const [players] = useContext(PlayersContext);
   const [currentPlayer] = useContext(CurrentPlayerContext);
 
   useEffect(() => {
     const onChoosing = ({ name }) => {
-      console.log("from game.jsx ", name);
+      console.log("Choosing word:", name);
       setTurnPlayer(name);
       setTurnPlayerStatus("is choosing a word");
     };
@@ -61,12 +63,14 @@ function GameDesktop() {
   useEffect(() => {
     const onChooseWord = (wordOptions) => {
       setWordOptions(wordOptions);
+      setTurnPlayer(currentPlayer.name);
+      setTurnPlayerStatus("is choosing a word");
       onChooseWordModalOpen();
     };
     socket.on("chooseWord", onChooseWord);
 
     return () => socket.off("chooseWord", onChooseWord);
-  }, [socket, setWordOptions, onChooseWordModalOpen]);
+  }, [socket, setWordOptions, onChooseWordModalOpen, currentPlayer.name]);
 
   useEffect(() => {
     const onHints = (data) => {
@@ -115,6 +119,13 @@ function GameDesktop() {
     socket.on("lastWord", onLastWord);
 
     return () => socket.off("lastWord", onLastWord);
+  });
+
+  useEffect(() => {
+    const onDisableCanvas = () => setIsCanvasEnabled(false);
+    socket.on("disableCanvas", onDisableCanvas);
+
+    return () => socket.off("disableCanvas", onDisableCanvas);
   });
 
   useEffect(() => {
@@ -181,7 +192,7 @@ function GameDesktop() {
             <UserScoreList users={players} />
           </GridItem>
           <GridItem w="100%" h="80vh">
-            <DrawingBoard canvasEnabled={turnPlayer === currentPlayer.name}/>
+            <DrawingBoard canvasEnabled={isCanvasEnabled} />
           </GridItem>
           <GridItem
             w="100%"
@@ -191,7 +202,6 @@ function GameDesktop() {
             borderColor={borderColor}
           >
             <ChatWindow inputDisabled={turnPlayer === currentPlayer.name} />
-            {/* TODO: Disable not working */}
           </GridItem>
         </Grid>
       </GridItem>
@@ -202,6 +212,7 @@ function GameDesktop() {
           onWordSelect={(selectedWord) => {
             console.log(selectedWord);
             socket.emit("chooseWord", { word: selectedWord });
+            setIsCanvasEnabled(true);
             onChooseWordModalClose();
           }}
           words={wordOptions}

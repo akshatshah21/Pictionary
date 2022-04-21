@@ -1,151 +1,150 @@
-import { useContext, useState, useRef, useEffect } from "react"
-import { Flex } from "@chakra-ui/react";
-import { Button } from '@chakra-ui/react'
-import { Stack } from '@chakra-ui/react'
-import { ReactSketchCanvas } from 'react-sketch-canvas';
+import { useContext, useState, useRef, useEffect } from "react";
+import { Flex, Button, Stack } from "@chakra-ui/react";
+import { ReactSketchCanvas } from "react-sketch-canvas";
 import { SocketContext } from "../App";
-import { BsEraserFill } from 'react-icons/bs';
-import {GoPrimitiveDot} from 'react-icons/go';
-import {ImBin} from 'react-icons/im';
-import { CurrentPlayerContext } from "../App";
+import { BsEraserFill } from "react-icons/bs";
+import { GoPrimitiveDot } from "react-icons/go";
+import { ImBin } from "react-icons/im";
 
-function DrawingBoard(canvasEnabled) {
-    const colorClasses = [
-        "white",
-        "grey",
-        "red",
-        "orange",
-        "yellow",
-        "green",
-        "skyblue",
-        "blue",
-        "purple",
-        "pink",
-        "brown",
-        "black",
-    ];
-    const socket = useContext(SocketContext);
-    const canvasRef = useRef(null);
-    const [sColor, setSColor] = useState("red");
-		// const [updateCanvas, setUpdateCanvas] = useState("");
-    function changeColor(color) {
-        canvasRef.current.eraseMode(false);
-        setSColor(color);
-    }
+function DrawingBoard({ canvasEnabled }) {
+  const colorClasses = [
+    "white",
+    "grey",
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "skyblue",
+    "blue",
+    "purple",
+    "pink",
+    "brown",
+    "black",
+  ];
+  const socket = useContext(SocketContext);
+  const canvasRef = useRef(null);
+  const [strokeColor, setStrokeColor] = useState("black");
 
-    const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
-		useEffect(() => {
-			
-			if(canvasEnabled){
-				canvasRef.current.allowOnlyPointerType = 'all'
-			}
-			else{
-				canvasRef.current.allowOnlyPointerType = "pen"
-			}
-	
-		}, []);
-		// console.log(currentPlayer['name'], " == ", turnPlayer)
-		async function updateCanvas(){
-			// console.log("working hellofflfllfl")
-			socket.emit('drawing', {
-            canvasBase64: await canvasRef.current.exportPaths()
-						// data: "hello0000"
-        });
-    
-			socket.on("drawing", (data) => {
-					canvasRef.current.loadPaths(data['canvasBase64'])
-					// console.log("listen", data['canvasBase64'])
-			});
-		}
-    
+  function changeColor(color) {
+    canvasRef.current.eraseMode(false);
+    setStrokeColor(color);
+  }
 
-    
-    const [strokeWidth, setStrokeWidth] = useState(4);
-    return (
-        <Flex
-            width="100%"
-            height="100%"
-            flexDir="column"
-            justify="stretch"
-            align="stretch"
-        >
-            <ReactSketchCanvas
-                ref={canvasRef}
-                width="100%"
-                height="100%"
-                strokeWidth={strokeWidth}
-                strokeColor={sColor}
-								allowOnlyPointerType = {"pen"}
-                onStroke={()=>updateCanvas()}
-            />
-            <Stack spacing={2} direction="row" align="center" m="10px">
-                {colorClasses.map((color) => (
-                    <Button
-                        key={color}
-                        bgColor={color}
-                        size="sm"
-                        border="2px"
-                        _hover={{}}
-                        _active={{}}
-                        borderColor="black"
-                        onClick={() => changeColor(color)}
-                    ></Button>
-                ))}
-                <Button
-                    size="sm"
-                    border="2px"
-                    _hover={{}}
-                    _active={{}}
-                    borderColor="black"
-                    onClick={() => canvasRef.current.clearCanvas()}
-                >
-                    <ImBin/>
-                </Button>
-                <Button
-                    size="sm"
-                    border="2px"
-                    _hover={{}}
-                    _active={{}}
-                    borderColor="black"
-                    onClick={() => canvasRef.current.eraseMode(true)}
-                >
-                    <BsEraserFill/>
-                </Button>
-                <Button
-                    size="sm"
-                    border="2px"
-                    _hover={{}}
-                    _active={{}}
-                    borderColor="black"
-                    onClick={() => setStrokeWidth(4)}
-                >
-                    <GoPrimitiveDot/>
-                </Button>
-                <Button
-                    size="sm"
-                    border="2px"
-                    _hover={{}}
-                    _active={{}}
-                    borderColor="black"
-                    onClick={() => setStrokeWidth(6)}
-                >
-                    <GoPrimitiveDot size = '2em'/>
-                </Button>
-                <Button
-                    size="sm"
-                    border="2px"
-                    _hover={{}}
-                    _active={{}}
-                    borderColor="black"
-                    onClick={() => setStrokeWidth(8)}
-                >
-                   <GoPrimitiveDot size = '3em'/>
-                </Button>
-            </Stack>
-        </Flex>
-    );
+  useEffect(() => {
+    const onDrawing = (data) => {
+      canvasRef.current.loadPaths(data["canvasBase64"]);
+    };
+    socket.on("drawing", onDrawing);
+
+    return () => socket.off("drawing", onDrawing);
+  }, [socket]);
+
+  useEffect(() => {
+    const onClearCanvas = async () => {
+      await canvasRef.current.clearCanvas();
+    };
+    socket.on("clearCanvas", onClearCanvas);
+
+    return () => socket.off("clearCanvas", onClearCanvas);
+  });
+
+  async function updateCanvas() {
+    socket.emit("drawing", {
+      canvasBase64: await canvasRef.current.exportPaths(),
+    });
+  }
+
+  async function clearCanvas() {
+    await canvasRef.current.clearCanvas();
+    socket.emit("clearCanvas");
+  }
+
+  const [strokeWidth, setStrokeWidth] = useState(4);
+  return (
+    <Flex
+      width="100%"
+      height="100%"
+      flexDir="column"
+      justify="stretch"
+      align="stretch"
+    >
+      <ReactSketchCanvas
+        ref={canvasRef}
+        width="100%"
+        height="100%"
+        strokeWidth={strokeWidth}
+        strokeColor={strokeColor}
+        allowOnlyPointerType={canvasEnabled ? "all" : "pen"}
+        onStroke={updateCanvas}
+      />
+      {canvasEnabled && (
+        <Stack spacing={2} direction="row" align="center" m="10px">
+          {colorClasses.map((color) => (
+            <Button
+              key={color}
+              bgColor={color}
+              size="sm"
+              border="2px"
+              _hover={{}}
+              _active={{}}
+              borderColor="black"
+              onClick={() => changeColor(color)}
+            ></Button>
+          ))}
+          <Button
+            size="sm"
+            border="2px"
+            _hover={{}}
+            _active={{}}
+            borderColor="black"
+            onClick={clearCanvas}
+          >
+            <ImBin />
+          </Button>
+          <Button
+            size="sm"
+            border="2px"
+            _hover={{}}
+            _active={{}}
+            borderColor="black"
+            onClick={() => canvasRef.current.eraseMode(true)}
+          >
+            <BsEraserFill />
+          </Button>
+          <Button
+            size="sm"
+            border="2px"
+            _hover={{}}
+            _active={{}}
+            borderColor="black"
+            onClick={() => setStrokeWidth(4)}
+          >
+            <GoPrimitiveDot />
+          </Button>
+          <Button
+            size="sm"
+            border="2px"
+            _hover={{}}
+            _active={{}}
+            borderColor="black"
+            onClick={() => setStrokeWidth(6)}
+          >
+            <GoPrimitiveDot size="2em" />
+          </Button>
+          <Button
+            size="sm"
+            border="2px"
+            _hover={{}}
+            _active={{}}
+            borderColor="black"
+            onClick={() => setStrokeWidth(8)}
+          >
+            <GoPrimitiveDot size="3em" />
+          </Button>
+        </Stack>
+      )}
+    </Flex>
+  );
 }
 
 export default DrawingBoard;
-
-
