@@ -16,11 +16,6 @@ import DrawingBoard from "../../components/DrawingBoard";
 import { CurrentPlayerContext, PlayersContext, SocketContext } from "../../App";
 import SecondsTimer from "../../components/SecondsTimer";
 
-const soundEffectsWithTime = {
-  0: [() => console.log("Timer over")],
-  10: [() => console.log("10 secs left")],
-};
-
 function GameDesktop() {
   const borderColor = useColorModeValue("gray.300", "gray.600");
   const currentDrawerBgColor = useColorModeValue("blue.300", "blue.700");
@@ -32,11 +27,14 @@ function GameDesktop() {
   const [wordOptions, setWordOptions] = useState(null);
   const [roundTime, setRoundTime] = useState(null);
 
+  // TODO Maybe find a better way to do this
+  const [timerUpdate, setTimerUpdate] = useState(true);
+
   const [isCanvasEnabled, setIsCanvasEnabled] = useState(false);
 
   const [hints, setHints] = useState(null);
   const [displayedHint, setDisplayedHint] = useState(null);
-  const [effectsWithTime, setEffectsWithTime] = useState(soundEffectsWithTime);
+  const [effectsWithTime, setEffectsWithTime] = useState(null);
 
   const socket = useContext(SocketContext);
   const [players] = useContext(PlayersContext);
@@ -83,17 +81,21 @@ function GameDesktop() {
   }, [socket, setHints]);
 
   useEffect(() => {
-    setEffectsWithTime((effects) => {
+    const effectsWithTime = {
+      0: [() => console.log("Timer over")],
+      10: [() => console.log("10 secs left")],
+    };
+    setEffectsWithTime(() => {
       hints &&
         hints.forEach((hint) => {
           const updateHint = () => setDisplayedHint(hint.hint);
-          if (effects[hint.displayTime]) {
-            effects[hint.displayTime].push(updateHint);
+          if (effectsWithTime[hint.displayTime]) {
+            effectsWithTime[hint.displayTime].push(updateHint);
           } else {
-            effects[hint.displayTime] = [updateHint];
+            effectsWithTime[hint.displayTime] = [updateHint];
           }
         });
-      return effects;
+      return effectsWithTime;
     });
   }, [hints, setDisplayedHint, setEffectsWithTime]);
 
@@ -162,8 +164,9 @@ function GameDesktop() {
               <Text my="auto">
                 {roundTime && (
                   <SecondsTimer
+                    key={hints}
                     duration={roundTime / 1000}
-                    onComplete={() => console.log("Round complete")}
+                    onComplete={() => console.log("round over")}
                     effects={effectsWithTime}
                   />
                 )}

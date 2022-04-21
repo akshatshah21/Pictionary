@@ -18,7 +18,7 @@ export default function SecondsTimer({ onComplete, duration, effects }) {
       timeout = setTimeout(() => setCounter(counter - 1), 1000);
     } else {
       onComplete();
-      setCounter(0);
+      setCounter(duration);
     }
 
     if (effects && counter in effects) {
@@ -30,7 +30,7 @@ export default function SecondsTimer({ onComplete, duration, effects }) {
     return () => {
       clearTimeout(timeout);
     };
-  }, [counter, onComplete, effects]);
+  }, [counter, onComplete, effects, duration]);
 
   return counter;
 }
