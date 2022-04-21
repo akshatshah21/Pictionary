@@ -28,7 +28,8 @@ function getHints(word, roomID) {
     const wordLength = splitter.countGraphemes(word);
     const hintsCount = Math.floor(0.7 * wordLength);
     const graphemes = splitter.splitGraphemes(word);
-    let prevHint = graphemes.map((char) => (char !== ' ' ? '_' : ' '));
+    let firstHint = graphemes.map((char) => (char !== ' ' ? '_' : '   '));
+    let prevHint = firstHint;
     while (hints.length !== hintsCount) {
         const pos = chance.integer({ min: 0, max: wordLength - 1 });
         // eslint-disable-next-line no-continue
@@ -36,8 +37,11 @@ function getHints(word, roomID) {
         prevHint = [...prevHint.slice(0, pos), graphemes[pos], ...prevHint.slice(pos + 1)];
         hints.push(prevHint);
     }
-    hints = hints.map((hint) => hint.join(''));
-    return populateDisplayTime(hints, roomID);
+    hints = hints.map((hint) => hint.join(' '));
+    return [{
+        hint: firstHint.join(' '),
+        displayTime: (games[roomID].time/1000) - 1 
+    }, ...populateDisplayTime(hints, roomID)];
 }
 
 function wait(roomID, drawer, ms) {

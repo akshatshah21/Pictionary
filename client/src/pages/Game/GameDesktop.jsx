@@ -5,15 +5,21 @@ import {
   Text,
   useColorModeValue,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-
 import { useState, useEffect, useContext } from "react";
 
 import UserScoreList from "../../components/UserScoreList";
 import ChatWindow from "../../components/ChatWindow";
 import ChooseWordModal from "../../components/ChooseWordModal";
 import DrawingBoard from "../../components/DrawingBoard";
-import { PlayersContext, SocketContext } from "../../App";
+import { CurrentPlayerContext, PlayersContext, SocketContext } from "../../App";
+import SecondsTimer from "../../components/SecondsTimer";
+
+const soundEffectsWithTime = {
+  0: [() => console.log("Timer over")],
+  10: [() => console.log("10 secs left")],
+};
 
 function GameDesktop() {
   const borderColor = useColorModeValue("gray.300", "gray.600");
@@ -24,17 +30,21 @@ function GameDesktop() {
   const [turnPlayerStatus, setTurnPlayerStatus] = useState("");
   const [turnPlayer, setTurnPlayer] = useState("");
   const [wordOptions, setWordOptions] = useState(null);
+  const [roundTime, setRoundTime] = useState(null);
 
   const [hints, setHints] = useState(null);
+  const [displayedHint, setDisplayedHint] = useState(null);
+  const [effectsWithTime, setEffectsWithTime] = useState(soundEffectsWithTime);
 
   const socket = useContext(SocketContext);
   const [players, setPlayers] = useContext(PlayersContext);
+  const [currentPlayer] = useContext(CurrentPlayerContext);
 
   useEffect(() => {
     const onChoosing = ({ name }) => {
       console.log(name);
       setTurnPlayer(name);
-      setTurnPlayerStatus(`is choosing a word`);
+      setTurnPlayerStatus("is choosing a word");
     };
     socket.on("choosing", onChoosing);
 
@@ -46,6 +56,7 @@ function GameDesktop() {
     onOpen: onChooseWordModalOpen,
     onClose: onChooseWordModalClose,
   } = useDisclosure();
+  const toast = useToast();
 
   useEffect(() => {
     const onChooseWord = (wordOptions) => {
@@ -58,8 +69,62 @@ function GameDesktop() {
   }, [socket, setWordOptions, onChooseWordModalOpen]);
 
   useEffect(() => {
-    socket.on("hints", (data) => console.log(data));
-  }, [socket]);
+    const onHints = (data) => {
+      setHints(data);
+      setTurnPlayerStatus("is drawing");
+    };
+    socket.on("hints", onHints);
+
+    return () => socket.off("hints", onHints);
+  }, [socket, setHints]);
+
+  useEffect(() => {
+    setEffectsWithTime((effects) => {
+      hints &&
+        hints.forEach((hint) => {
+          const updateHint = () => setDisplayedHint(hint.hint);
+          if (effects[hint.displayTime]) {
+            effects[hint.displayTime].push(updateHint);
+          } else {
+            effects[hint.displayTime] = [updateHint];
+          }
+        });
+      return effects;
+    });
+  }, [hints, setDisplayedHint, setEffectsWithTime]);
+
+  useEffect(() => {
+    const onStartTimer = ({ time }) => {
+      setRoundTime(time);
+    };
+    socket.on("startTimer", onStartTimer);
+
+    return () => socket.off("startTimer", onStartTimer);
+  }, [socket, setRoundTime]);
+
+  useEffect(() => {
+    const onLastWord = ({ word }) => {
+      toast({
+        title: "Round Over!",
+        description: `The word was: ${word}`,
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
+    };
+    socket.on("lastWord", onLastWord);
+
+    return () => socket.off("lastWord", onLastWord);
+  });
+
+  useEffect(() => {
+    const onEndGame = (stats) => {
+      console.log("stats", stats);
+    };
+    socket.on("endGame", onEndGame);
+
+    return () => socket.off("endGame", onEndGame);
+  });
 
   return (
     <Grid w="100%" h="100%" templateRows="1fr 11fr" p="2" gap="2">
@@ -83,8 +148,16 @@ function GameDesktop() {
               borderColor={borderColor}
               px="2"
             >
-              <Text my="auto">Time left: 21</Text>
-              <Text m="auto">_ _ _ _ _ _ _ _</Text>
+              <Text my="auto">
+                {roundTime && (
+                  <SecondsTimer
+                    duration={roundTime / 1000}
+                    onComplete={() => console.log("Round complete")}
+                    effects={effectsWithTime}
+                  />
+                )}
+              </Text>
+              <Text m="auto">{displayedHint}</Text>
             </Flex>
           </GridItem>
           <GridItem h="100%">
@@ -117,7 +190,8 @@ function GameDesktop() {
             borderRadius="md"
             borderColor={borderColor}
           >
-            <ChatWindow />
+            <ChatWindow inputDisabled={turnPlayer === currentPlayer.name} />
+            {/* TODO: Disable not working */}
           </GridItem>
         </Grid>
       </GridItem>
