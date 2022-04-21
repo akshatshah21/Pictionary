@@ -88,14 +88,14 @@ class Game {
         const currentWord = games[socket.roomID].currentWord.toLowerCase();
         const distance = leven(guess, currentWord);
         if (distance === 0 && currentWord !== '') {
-            socket.emit('message', { ...data, name: socket.player.name });
+            socket.emit('message', { content: guess, name: socket.player.name, timestamp: Date.now(), type: "correct" });
             if (games[socket.roomID].drawer !== socket.id && !socket.hasGuessed) {
                 const drawer = io.of('/').sockets.get(games[socket.roomID].drawer);
                 const { startTime } = games[socket.roomID];
                 const roundTime = games[socket.roomID].time;
                 const roomSize = io.sockets.adapter.rooms.get(socket.roomID).size;
-                socket.emit('correctGuess', { message: 'You guessed it right!', id: socket.id });
-                socket.broadcast.emit('correctGuess', { message: `${socket.player.name} has guessed the word!`, id: socket.id });
+                socket.emit('correctGuess', { timestamp: Date.now(), content: 'You guessed it right!', type: "correct", id: socket.id });
+                socket.to(socket.roomID).emit('correctGuess', { timestamp: Date.now(), type: "correct", content: `${socket.player.name} has guessed the word!`, id: socket.id });
                 games[socket.roomID].totalGuesses++;
                 games[socket.roomID][socket.id].score += getScore(startTime, roundTime);
                 games[socket.roomID][drawer.id].score += BONUS;
@@ -111,10 +111,10 @@ class Game {
             }
             socket.hasGuessed = true;
         } else if (distance < 3 && currentWord !== '') {
-            io.in(socket.roomID).emit('message', { ...data, name: socket.player.name });
-            if (games[socket.roomID].drawer !== socket.id && !socket.hasGuessed) socket.emit('closeGuess', { message: 'That was very close!' });
+            io.in(socket.roomID).emit('message', { content: guess, name: socket.player.name, timestamp: Date.now(), type: "regular" });
+            if (games[socket.roomID].drawer !== socket.id && !socket.hasGuessed) socket.emit('closeGuess', { content: "That was very close!", timestamp: Date.now(), type: "close" });
         } else {
-            io.in(socket.roomID).emit('message', { ...data, name: socket.player.name });
+            io.in(socket.roomID).emit('message', { content: guess, name: socket.player.name, timestamp: Date.now(), type: "regular" });
         }
     }
 

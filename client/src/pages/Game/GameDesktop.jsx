@@ -13,7 +13,7 @@ import UserScoreList from "../../components/UserScoreList";
 import ChatWindow from "../../components/ChatWindow";
 import ChooseWordModal from "../../components/ChooseWordModal";
 import DrawingBoard from "../../components/DrawingBoard";
-import { PlayersContext, SocketContext } from "../../App";
+import { CurrentPlayerContext, PlayersContext, SocketContext } from "../../App";
 import SecondsTimer from "../../components/SecondsTimer";
 
 const soundEffectsWithTime = {
@@ -38,6 +38,7 @@ function GameDesktop() {
 
   const socket = useContext(SocketContext);
   const [players, setPlayers] = useContext(PlayersContext);
+  const [currentPlayer] = useContext(CurrentPlayerContext);
 
   useEffect(() => {
     const onChoosing = ({ name }) => {
@@ -189,7 +190,8 @@ function GameDesktop() {
             borderRadius="md"
             borderColor={borderColor}
           >
-            <ChatWindow />
+            <ChatWindow inputDisabled={turnPlayer === currentPlayer.name} />
+            {/* TODO: Disable not working */}
           </GridItem>
         </Grid>
       </GridItem>
