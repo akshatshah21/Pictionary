@@ -40,7 +40,8 @@ class Game {
         const { io, socket } = this;
         const { rounds } = games[socket.roomID];
         const players = Array.from(await io.in(socket.roomID).allSockets());
-        socket.to(socket.roomID).emit('startGame');
+        io.in(socket.roomID).emit('startGame');
+        // socket.to(socket.roomID).emit('startGame');
         for (let j = 0; j < rounds; j++) {
             /* eslint-disable no-await-in-loop */
             for (let i = 0; i < players.length; i++) {
@@ -64,7 +65,10 @@ class Game {
         games[roomID].currentWord = '';
         games[roomID].drawer = player;
         io.to(prevPlayer).emit('disableCanvas');
-        drawer.to(roomID).broadcast.emit('choosing', { name: drawer.player.name });
+        console.log("drawer: ", drawer)
+        console.log("roomId: ", roomID)
+        drawer.to(roomID).emit('choosing', { name: drawer.player.name });
+        // drawer.to(roomID).broadcast.emit('choosing', { name: drawer.player.name });
         io.to(player).emit('chooseWord', get3Words(roomID));
         try {
             const word = await this.chosenWord(player);

@@ -16,24 +16,25 @@ import {
 } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { CurrentPlayerContext, PlayersContext, SocketContext } from "../App";
 import { RoomUser } from "../components/RoomUser";
 import { SliderThumbWithTooltip } from "../components/SliderThumbWithTooltip";
 
 const LANGUAGES = [
-  { value: "en", name: "English" },
-  { value: "de", name: "German" },
-  { value: "hi", name: "Hindi" },
+  { value: "english", name: "English" },
+  { value: "hindi", name: "Hindi" },
 ];
 const DEFAULT_CUSTOM_WORDS_PROB = 5; // percent
 const DEFAULT_ROUNDS = 5;
 const DEFAULT_ROUND_TIME = 60; // seconds
-const DEFAULT_LANGUAGE = { value: "en", name: "English" };
+const DEFAULT_LANGUAGE = { value: "english", name: "English" };
 
 const alphabeticalSortCompare = (playerA, playerB) =>
   playerA.name <= playerB.name;
 
 function GameSettings() {
+  const navigate = useNavigate();
   const bgColor = useColorModeValue("white", "gray.900");
   const [rounds, setRounds] = useState(DEFAULT_ROUNDS);
   const [roundTime, setRoundTime] = useState(DEFAULT_ROUND_TIME);
@@ -98,7 +99,15 @@ function GameSettings() {
     socket.on("settingsUpdate", onSettingsUpdate);
 
     return () => socket.off("settingsUpdate", onSettingsUpdate);
-  }, [socket, setRounds, setRoundTime, setCustomWordsProb, setLanguage]);
+  }, [socket, setRounds, setRoundTime, setCustomWordsProb, setLanguage]); 
+
+  const {roomId: roomCode} = useParams();
+  useEffect(() => {
+    socket.once("startGame", () => {
+      navigate(`/room/${roomCode}/`);
+    })
+  }, [socket, navigate, roomCode])
+  
 
   return (
     <Flex h="75vh" marginTop="10vh" justifyContent="center">
@@ -188,7 +197,8 @@ function GameSettings() {
                   my="4"
                   w="100%"
                   onClick={() => {
-                    console.log("Start game");
+                    // console.log("Start game");
+                    socket.emit("startGame");
                     // TODO Start game
                   }}
                 >
