@@ -54,13 +54,13 @@ function UserScoreItem({ user, rank }) {
         boxSize="3em"
         rounded="full"
         src={user.avatar}
-        alt={`${user.username}'s Avatar`}
+        alt={`${user.name}'s Avatar`}
       />
       <Flex flexDir="column">
         <Text fontSize="sm" isTruncated>
-          {user.username}
+          {user.name}
         </Text>
-        <Text fontSize="sm">Score: {user.score}</Text>
+        <Text fontSize="sm">Score: {user.score ? user.score : 0}</Text>
       </Flex>
     </Flex>
   );

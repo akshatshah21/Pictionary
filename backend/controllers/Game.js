@@ -65,19 +65,16 @@ class Game {
         games[roomID].currentWord = '';
         games[roomID].drawer = player;
         io.to(prevPlayer).emit('disableCanvas');
-        console.log("drawer: ", drawer)
-        console.log("roomId: ", roomID)
-        drawer.to(roomID).emit('choosing', { name: drawer.player.name });
-        // drawer.to(roomID).broadcast.emit('choosing', { name: drawer.player.name });
+        io.in(roomID).emit('choosing', { name: drawer.player.name });
         io.to(player).emit('chooseWord', get3Words(roomID));
         try {
             const word = await this.chosenWord(player);
             games[roomID].currentWord = word;
             io.to(roomID).emit('clearCanvas');
-            drawer.to(roomID).broadcast.emit('hints', getHints(word, roomID));
+            drawer.to(roomID).emit('hints', getHints(word, roomID));
             games[roomID].startTime = Date.now() / 1000;
-            io.to(roomID).emit('startTimer', { time });
-            if (await wait(roomID, drawer, time)) drawer.to(roomID).broadcast.emit('lastWord', { word });
+            io.in(roomID).emit('startTimer', { time });
+            if (await wait(roomID, drawer, time)) drawer.to(roomID).emit('lastWord', { word });
         } catch (error) {
             console.log(error);
         }
