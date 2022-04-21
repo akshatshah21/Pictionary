@@ -48,33 +48,34 @@ class Game {
                 await this.giveTurnTo(players, i);
             }
         }
-        io.to(socket.roomID).emit('endGame', { stats: games[socket.roomID] });
+        io.in(socket.roomID).emit('endGame', { stats: games[socket.roomID] });
         delete games[socket.roomID];
     }
 
     async giveTurnTo(players, i) {
         const { io, socket } = this;
-        const { roomID } = socket;
-        const { time } = games[roomID];
-        const player = players[i];
-        const prevPlayer = players[(i - 1 + players.length) % players.length];
-        const drawer = io.of('/').sockets.get(player);
-        if (!drawer || !games[roomID]) return;
-        this.resetGuessedFlag(players);
-        games[roomID].totalGuesses = 0;
-        games[roomID].currentWord = '';
-        games[roomID].drawer = player;
-        io.to(prevPlayer).emit('disableCanvas');
-        io.in(roomID).emit('choosing', { name: drawer.player.name });
-        io.to(player).emit('chooseWord', get3Words(roomID));
         try {
+            const { roomID } = socket;
+            const { time } = games[roomID];
+            const player = players[i];
+            const prevPlayer = players[(i - 1 + players.length) % players.length];
+            const drawer = io.of('/').sockets.get(player);
+            if (!drawer || !games[roomID]) return;
+            this.resetGuessedFlag(players);
+            games[roomID].totalGuesses = 0;
+            games[roomID].currentWord = '';
+            games[roomID].drawer = player;
+            io.to(prevPlayer).emit('disableCanvas');
+            io.in(roomID).emit('choosing', { name: drawer.player.name });
+            io.to(player).emit('chooseWord', get3Words(roomID));
             const word = await this.chosenWord(player);
             games[roomID].currentWord = word;
             io.to(roomID).emit('clearCanvas');
             drawer.to(roomID).emit('hints', getHints(word, roomID));
+            drawer.emit('hints', [{hint: word, displayTime: time/1000 - 1}]);
             games[roomID].startTime = Date.now() / 1000;
             io.in(roomID).emit('startTimer', { time });
-            if (await wait(roomID, drawer, time)) drawer.to(roomID).emit('lastWord', { word });
+            if (await wait(roomID, drawer, time)) io.in(roomID).emit('lastWord', { word });
         } catch (error) {
             console.log(error);
         }
