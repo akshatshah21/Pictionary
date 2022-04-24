@@ -100,9 +100,9 @@ class Game {
                 games[socket.roomID][socket.id].score += getScore(startTime, roundTime);
                 games[socket.roomID][drawer.id].score += BONUS;
                 io.in(socket.roomID).emit('updateScore', {
-                    playerID: socket.id,
-                    score: games[socket.roomID][socket.id].score,
-                    drawerID: drawer.id,
+                    playerId: socket.id,
+                    playerScore: games[socket.roomID][socket.id].score,
+                    drawerId: drawer.id,
                     drawerScore: games[socket.roomID][drawer.id].score,
                 });
                 if (games[socket.roomID].totalGuesses === roomSize - 1) {

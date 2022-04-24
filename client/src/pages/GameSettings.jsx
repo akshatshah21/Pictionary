@@ -30,9 +30,6 @@ const DEFAULT_ROUNDS = 5;
 const DEFAULT_ROUND_TIME = 60; // seconds
 const DEFAULT_LANGUAGE = { value: "english", name: "English" };
 
-const alphabeticalSortCompare = (playerA, playerB) =>
-  playerA.name <= playerB.name;
-
 function GameSettings() {
   const navigate = useNavigate();
   const bgColor = useColorModeValue("white", "gray.900");
@@ -51,13 +48,20 @@ function GameSettings() {
 
   useEffect(() => {
     socket.once("otherPlayers", (otherPlayers) => {
-      setPlayers(
-        [currentPlayer, ...otherPlayers].sort(alphabeticalSortCompare)
-      );
+      setPlayers(() => {
+        const players = {
+          [currentPlayer.id]: currentPlayer,
+        };
+        otherPlayers.forEach((player) => {
+          players[player.id] = player;
+        });
+
+        return players;
+      });
     });
 
     function onPlayerJoin(player) {
-      setPlayers((prev) => [...prev, player].sort(alphabeticalSortCompare));
+      setPlayers((prev) => ({ ...prev, [player.id]: player }));
     }
 
     socket.on("joinRoom", onPlayerJoin);
@@ -99,15 +103,14 @@ function GameSettings() {
     socket.on("settingsUpdate", onSettingsUpdate);
 
     return () => socket.off("settingsUpdate", onSettingsUpdate);
-  }, [socket, setRounds, setRoundTime, setCustomWordsProb, setLanguage]); 
+  }, [socket, setRounds, setRoundTime, setCustomWordsProb, setLanguage]);
 
-  const {roomId: roomCode} = useParams();
+  const { roomId: roomCode } = useParams();
   useEffect(() => {
     socket.once("startGame", () => {
       navigate(`/room/${roomCode}/`);
-    })
-  }, [socket, navigate, roomCode])
-  
+    });
+  }, [socket, navigate, roomCode]);
 
   return (
     <Flex h="75vh" marginTop="10vh" justifyContent="center">
@@ -211,7 +214,9 @@ function GameSettings() {
         <GridItem w="100%" h="100%" overflow="auto">
           <Grid templateColumns="repeat(4, 1fr)" gridGap="2">
             {players &&
-              players.map((user) => <RoomUser key={user.name} user={user} />)}
+              Object.keys(players).map((id) => (
+                <RoomUser key={id} user={players[id]} />
+              ))}
           </Grid>
         </GridItem>
 

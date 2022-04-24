@@ -16,6 +16,16 @@ import DrawingBoard from "../../components/DrawingBoard";
 import { CurrentPlayerContext, PlayersContext, SocketContext } from "../../App";
 import SecondsTimer from "../../components/SecondsTimer";
 
+const playersSort = (playerA, playerB) => {
+  if (playerA.score && playerB.score) {
+    if (playerA.score === playerB.score) {
+      return playerA.id <= playerB.id ? 1 : -1;
+    }
+    return playerA.score > playerB.score ? -1 : 1;
+  }
+  return playerA.id <= playerB.id ? 1 : -1;
+};
+
 function GameDesktop() {
   const borderColor = useColorModeValue("gray.300", "gray.600");
   const currentDrawerBgColor = useColorModeValue("blue.300", "blue.700");
@@ -27,9 +37,6 @@ function GameDesktop() {
   const [wordOptions, setWordOptions] = useState(null);
   const [roundTime, setRoundTime] = useState(null);
 
-  // TODO Maybe find a better way to do this
-  const [timerUpdate, setTimerUpdate] = useState(true);
-
   const [isCanvasEnabled, setIsCanvasEnabled] = useState(false);
 
   const [hints, setHints] = useState(null);
@@ -37,8 +44,8 @@ function GameDesktop() {
   const [effectsWithTime, setEffectsWithTime] = useState(null);
 
   const socket = useContext(SocketContext);
-  const [players] = useContext(PlayersContext);
-  const [currentPlayer] = useContext(CurrentPlayerContext);
+  const [players, setPlayers] = useContext(PlayersContext);
+  const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
 
   useEffect(() => {
     const onChoosing = ({ name }) => {
@@ -109,6 +116,36 @@ function GameDesktop() {
   }, [socket, setRoundTime]);
 
   useEffect(() => {
+    const onUpdateScore = ({
+      playerId,
+      playerScore,
+      drawerId,
+      drawerScore,
+    }) => {
+      setPlayers((prev) => ({
+        ...prev,
+        [playerId]: { ...prev[playerId], score: playerScore },
+        [drawerId]: { ...prev[drawerId], score: drawerScore },
+      }));
+
+      if (playerId == currentPlayer.id) {
+        setCurrentPlayer((prev) => ({
+          ...prev,
+          score: playerScore,
+        }));
+      } else if (drawerId == currentPlayer.id) {
+        setCurrentPlayer((prev) => ({
+          ...prev,
+          score: drawerScore,
+        }));
+      }
+    };
+
+    socket.on("updateScore", onUpdateScore);
+    return () => socket.off("updateScore", onUpdateScore);
+  });
+
+  useEffect(() => {
     const onLastWord = ({ word }) => {
       toast({
         title: "Round Over!",
@@ -177,7 +214,7 @@ function GameDesktop() {
           <GridItem h="100%">
             <Flex w="100%" h="100%" bgColor={scoreBgColor} rounded="md">
               <Text m="auto" textAlign="center">
-                Your Score: 2108
+                Your Score: {currentPlayer.score ? currentPlayer.score : 0}
               </Text>
             </Flex>
           </GridItem>
@@ -192,7 +229,11 @@ function GameDesktop() {
             borderRadius="md"
             borderColor={borderColor}
           >
-            <UserScoreList users={players} />
+            <UserScoreList
+              users={Object.keys(players)
+                .map((id) => players[id])
+                .sort(playersSort)}
+            />
           </GridItem>
           <GridItem w="100%" h="80vh">
             <DrawingBoard canvasEnabled={isCanvasEnabled} />

@@ -19,8 +19,8 @@ export const CurrentPlayerContext = createContext();
 function App() {
   const bgImg = useColorModeValue(bgLight, bgDark);
   const [socket, setSocket] = useState(null);
-  const currentPlayerState = useState();
-  const playersState = useState([]);
+  const currentPlayerState = useState(null);
+  const playersState = useState(null);
 
   useEffect(() => {
     const newSocket = io(`http://${window.location.hostname}:5000`); // TODO refactor to ENV var

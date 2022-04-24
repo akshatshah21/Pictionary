@@ -24,7 +24,7 @@ function ChatWindow({ inputDisabled }) {
     messagesList.scroll({ top: messagesList.scrollHeight, behavior: "smooth" });
     const messageInput = document.querySelector("#message-input");
     messageInput.focus();
-  }, []);
+  }, [messages]);
 
   useEffect(() => {
     const onMessage = (message) => {
@@ -54,14 +54,8 @@ function ChatWindow({ inputDisabled }) {
   }, [socket, setMessages]);
 
   return (
-    <Grid
-      id="message-list"
-      templateColumns="minmax(0, 1fr)"
-      justify="stretch"
-      h="100%"
-      p="md:1"
-    >
-      <Flex flexDir="column" overflow="auto">
+    <Grid templateColumns="minmax(0, 1fr)" justify="stretch" h="100%" p="md:1">
+      <Flex flexDir="column" overflow="auto" id="message-list">
         {messages.map((message) => (
           <Message
             key={message.timestamp}
@@ -79,12 +73,12 @@ function ChatWindow({ inputDisabled }) {
           value={input}
           p="1 md:6"
           fontSize="md:lg"
-          onChange={(e) => setInput(e.target.value.trim())}
+          onChange={(e) => setInput(e.target.value)}
           onKeyUp={(e) => {
             if (e.key === "Enter") {
               e.preventDefault();
               if (input.trim() !== "") {
-                socket.emit("message", { message: input });
+                socket.emit("message", { message: input.trim() });
                 setInput("");
               }
             }

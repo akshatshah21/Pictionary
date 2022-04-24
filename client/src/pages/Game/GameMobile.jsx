@@ -13,12 +13,17 @@ import UserScoreList from "../../components/UserScoreList";
 import ChatWindow from "../../components/ChatWindow";
 import ChooseWordModal from "../../components/ChooseWordModal";
 import DrawingBoard from "../../components/DrawingBoard";
-import { PlayersContext, SocketContext } from "../../App";
+import { PlayersContext, SocketContext, CurrentPlayerContext } from "../../App";
 import SecondsTimer from "../../components/SecondsTimer";
 
-const soundEffectsWithTime = {
-  0: [() => console.log("Timer over")],
-  10: [() => console.log("10 secs left")],
+const playersSort = (playerA, playerB) => {
+  if (playerA.score && playerB.score) {
+    if (playerA.score === playerB.score) {
+      return playerA.id <= playerB.id ? 1 : -1;
+    }
+    return playerA.score > playerB.score ? -1 : 1;
+  }
+  return playerA.id <= playerB.id ? 1 : -1;
 };
 
 function GameMobile() {
@@ -32,12 +37,15 @@ function GameMobile() {
   const [wordOptions, setWordOptions] = useState(null);
   const [roundTime, setRoundTime] = useState(null);
 
+  const [isCanvasEnabled, setIsCanvasEnabled] = useState(false);
+
   const [hints, setHints] = useState(null);
   const [displayedHint, setDisplayedHint] = useState(null);
-  const [effectsWithTime, setEffectsWithTime] = useState(soundEffectsWithTime);
+  const [effectsWithTime, setEffectsWithTime] = useState(null);
 
   const socket = useContext(SocketContext);
   const [players, setPlayers] = useContext(PlayersContext);
+  const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
 
   useEffect(() => {
     const onChoosing = ({ name }) => {
@@ -59,12 +67,14 @@ function GameMobile() {
   useEffect(() => {
     const onChooseWord = (wordOptions) => {
       setWordOptions(wordOptions);
+      setTurnPlayer(currentPlayer.name);
+      setTurnPlayerStatus("is choosing a word");
       onChooseWordModalOpen();
     };
     socket.on("chooseWord", onChooseWord);
 
     return () => socket.off("chooseWord", onChooseWord);
-  }, [socket, setWordOptions, onChooseWordModalOpen]);
+  }, [socket, setWordOptions, onChooseWordModalOpen, currentPlayer.name]);
 
   useEffect(() => {
     const onHints = (data) => {
@@ -77,17 +87,21 @@ function GameMobile() {
   }, [socket, setHints]);
 
   useEffect(() => {
-    setEffectsWithTime((effects) => {
+    const effectsWithTime = {
+      0: [() => console.log("Timer over")],
+      10: [() => console.log("10 secs left")],
+    };
+    setEffectsWithTime(() => {
       hints &&
         hints.forEach((hint) => {
           const updateHint = () => setDisplayedHint(hint.hint);
-          if (effects[hint.displayTime]) {
-            effects[hint.displayTime].push(updateHint);
+          if (effectsWithTime[hint.displayTime]) {
+            effectsWithTime[hint.displayTime].push(updateHint);
           } else {
-            effects[hint.displayTime] = [updateHint];
+            effectsWithTime[hint.displayTime] = [updateHint];
           }
         });
-      return effects;
+      return effectsWithTime;
     });
   }, [hints, setDisplayedHint, setEffectsWithTime]);
 
@@ -99,6 +113,36 @@ function GameMobile() {
 
     return () => socket.off("startTimer", onStartTimer);
   }, [socket, setRoundTime]);
+
+  useEffect(() => {
+    const onUpdateScore = ({
+      playerId,
+      playerScore,
+      drawerId,
+      drawerScore,
+    }) => {
+      setPlayers((prev) => ({
+        ...prev,
+        [playerId]: { ...prev[playerId], score: playerScore },
+        [drawerId]: { ...prev[drawerId], score: drawerScore },
+      }));
+
+      if (playerId == currentPlayer.id) {
+        setCurrentPlayer((prev) => ({
+          ...prev,
+          score: playerScore,
+        }));
+      } else if (drawerId == currentPlayer.id) {
+        setCurrentPlayer((prev) => ({
+          ...prev,
+          score: drawerScore,
+        }));
+      }
+    };
+
+    socket.on("updateScore", onUpdateScore);
+    return () => socket.off("updateScore", onUpdateScore);
+  });
 
   useEffect(() => {
     const onLastWord = ({ word }) => {
@@ -113,6 +157,13 @@ function GameMobile() {
     socket.on("lastWord", onLastWord);
 
     return () => socket.off("lastWord", onLastWord);
+  });
+
+  useEffect(() => {
+    const onDisableCanvas = () => setIsCanvasEnabled(false);
+    socket.on("disableCanvas", onDisableCanvas);
+
+    return () => socket.off("disableCanvas", onDisableCanvas);
   });
 
   useEffect(() => {
@@ -141,8 +192,9 @@ function GameMobile() {
             <Text m="auto">
               {roundTime && (
                 <SecondsTimer
+                  key={hints}
                   duration={roundTime / 1000}
-                  onComplete={() => console.log("Round complete")}
+                  onComplete={() => console.log("round over")}
                   effects={effectsWithTime}
                 />
               )}
@@ -153,17 +205,21 @@ function GameMobile() {
 
         <GridItem h="100%">
           <Flex flexDir="column" h="100%">
-            <DrawingBoard />
+            <DrawingBoard canvasEnabled={isCanvasEnabled} />
           </Flex>
         </GridItem>
 
         <GridItem w="100%" h="20vh">
           <Grid templateColumns="1fr 1fr" gap={2}>
             <GridItem w="100%" h="20vh">
-              <UserScoreList users={players} />
+              <UserScoreList
+                users={Object.keys(players)
+                  .map((id) => players[id])
+                  .sort(playersSort)}
+              />
             </GridItem>
             <GridItem h="20vh">
-              <ChatWindow />
+              <ChatWindow inputDisabled={turnPlayer === currentPlayer.name} />
             </GridItem>
           </Grid>
         </GridItem>
@@ -174,6 +230,7 @@ function GameMobile() {
           onWordSelect={(selectedWord) => {
             console.log(selectedWord);
             socket.emit("chooseWord", { word: selectedWord });
+            setIsCanvasEnabled(true);
             onChooseWordModalClose();
           }}
           words={wordOptions}

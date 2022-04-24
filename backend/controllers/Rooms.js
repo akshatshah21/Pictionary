@@ -45,14 +45,14 @@ class Room {
             probability: games[roomID].probability,
             language: games[roomID].language,
         })
-        socket.emit('otherPlayers',
-            players.reduce((acc, id) => {
-                if (socket.id !== id) {
-                    const { player } = io.of('/').sockets.get(id);
-                    acc.push(player);
-                }
-                return acc;
-            }, []));
+        const otherPlayers = players.reduce((acc, id) => {
+            if (socket.id !== id) {
+                const { player } = io.of('/').sockets.get(id);
+                acc.push({id, ...player});
+            }
+            return acc;
+        }, []);
+        socket.emit('otherPlayers', otherPlayers);
     }
 
     updateSettings(data) {

@@ -16,7 +16,7 @@ function UserScoreList({ users }) {
       </Text>
       <Flex flexDir="column" overflow="auto">
         {users.map((user, idx) => (
-          <UserScoreItem key={user.name} user={user} rank={idx + 1} />
+          <UserScoreItem key={user.id} user={user} rank={idx + 1} />
         ))}
       </Flex>
     </Flex>

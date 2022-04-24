@@ -59,6 +59,7 @@ function Play() {
   const joinRoom = () => {
     const username = getValues("username");
     setCurrentPlayer({
+      id: socket.id,
       name: username,
       avatar,
       isAdmin: false,
@@ -67,6 +68,7 @@ function Play() {
     socket.emit("joinRoom", {
       id: roomCode,
       player: {
+        id: socket.id,
         name: username,
         avatar,
       },
@@ -77,13 +79,14 @@ function Play() {
 
   const createRoom = (data) => {
     const _currentPlayer = {
+      id: socket.id,
       name: data.username,
       avatar,
       isAdmin: true,
     };
     setCurrentPlayer(_currentPlayer);
 
-    setPlayers([_currentPlayer]);
+    setPlayers({ [socket.id]: _currentPlayer });
 
     socket.emit("newPrivateRoom", {
       name: data.username,
