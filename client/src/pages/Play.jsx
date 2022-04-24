@@ -105,7 +105,7 @@ function Play() {
         marginTop="10"
         marginBottom="auto"
         rounded="md"
-        w={["95vw", "75vw", "75vw"]}
+        w={["95vw", "85vw", "50vw"]}
         flexDir="column"
         padding="8"
         bgColor={bgColor}

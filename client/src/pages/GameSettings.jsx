@@ -118,7 +118,7 @@ function GameSettings() {
         templateRows="10fr 2fr"
         templateColumns="repeat(2, 1fr)"
         gridGap="4"
-        w={["95vw", "75vw", "75vw"]}
+        w={["95vw", "85vw", "50vw"]}
         bgColor={bgColor}
         p="8"
         rounded="md"

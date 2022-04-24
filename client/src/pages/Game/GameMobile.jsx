@@ -19,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Confetti from "react-confetti";
 
 import UserScoreList from "../../components/UserScoreList";
 import ChatWindow from "../../components/ChatWindow";
@@ -291,6 +292,13 @@ function GameMobile() {
                     />
                   ))}
             </Grid>
+            {Object.keys(players)
+              .map((id) => players[id])
+              .sort(playersSort)
+              .slice(0, 3)
+              .findIndex((player) => player.id === currentPlayer.id) !== -1 && (
+              <Confetti />
+            )}
           </ModalBody>
 
           <ModalFooter>

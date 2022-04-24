@@ -18,6 +18,8 @@ import {
   ModalCloseButton,
 } from "@chakra-ui/react";
 import { useState, useEffect, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Confetti from "react-confetti";
 
 import UserScoreList from "../../components/UserScoreList";
 import ChatWindow from "../../components/ChatWindow";
@@ -26,7 +28,6 @@ import DrawingBoard from "../../components/DrawingBoard";
 import { CurrentPlayerContext, PlayersContext, SocketContext } from "../../App";
 import SecondsTimer from "../../components/SecondsTimer";
 import PlayerStats from "../../components/PlayerStats";
-import { useNavigate, useParams } from "react-router-dom";
 
 const playersSort = (playerA, playerB) => {
   if (playerA.score && playerB.score) {
@@ -317,6 +318,13 @@ function GameDesktop() {
                     />
                   ))}
             </Grid>
+            {Object.keys(players)
+              .map((id) => players[id])
+              .sort(playersSort)
+              .slice(0, 3)
+              .findIndex((player) => player.id === currentPlayer.id) !== -1 && (
+              <Confetti />
+            )}
           </ModalBody>
 
           <ModalFooter>
