@@ -1,4 +1,5 @@
 import {
+  Button,
   Flex,
   Grid,
   GridItem,
@@ -7,7 +8,17 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+} from "@chakra-ui/react";
 import { useState, useEffect, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 import UserScoreList from "../../components/UserScoreList";
 import ChatWindow from "../../components/ChatWindow";
@@ -15,6 +26,7 @@ import ChooseWordModal from "../../components/ChooseWordModal";
 import DrawingBoard from "../../components/DrawingBoard";
 import { PlayersContext, SocketContext, CurrentPlayerContext } from "../../App";
 import SecondsTimer from "../../components/SecondsTimer";
+import PlayerStats from "../../components/PlayerStats";
 
 const playersSort = (playerA, playerB) => {
   if (playerA.score && playerB.score) {
@@ -32,6 +44,9 @@ function GameMobile() {
   const scoreBgColor = useColorModeValue("orange.300", "orange.500");
   const headerBgColor = useColorModeValue("purple.300", "purple.700");
 
+  const navigate = useNavigate();
+  const { roomId } = useParams();
+
   const [turnPlayerStatus, setTurnPlayerStatus] = useState("");
   const [turnPlayer, setTurnPlayer] = useState("");
   const [wordOptions, setWordOptions] = useState(null);
@@ -46,6 +61,11 @@ function GameMobile() {
   const socket = useContext(SocketContext);
   const [players, setPlayers] = useContext(PlayersContext);
   const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
+  const {
+    isOpen: isGameEndedModalOpen,
+    onOpen: onGameEndedModalOpen,
+    onClose: onGameEndedModalClose,
+  } = useDisclosure();
 
   useEffect(() => {
     const onChoosing = ({ name }) => {
@@ -169,6 +189,10 @@ function GameMobile() {
   useEffect(() => {
     const onEndGame = (stats) => {
       console.log("stats", stats);
+      onGameEndedModalOpen();
+      setTimeout(() => {
+        navigate(`/room/${roomId}/lobby`);
+      }, 10000);
     };
     socket.on("endGame", onEndGame);
 
@@ -236,6 +260,53 @@ function GameMobile() {
           words={wordOptions}
         />
       )}
+
+      <Modal
+        isOpen={isGameEndedModalOpen}
+        onClose={() => {
+          onGameEndedModalClose();
+          navigate(`/room/${roomId}/lobby`);
+        }}
+        isCentered
+        size="4xl"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Game Over!</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Grid
+              templateColumns="repeat(auto-fit, minmax(300px, 1fr))"
+              gridGap="2"
+            >
+              {players &&
+                Object.keys(players)
+                  .map((id) => players[id])
+                  .sort(playersSort)
+                  .map((player, idx) => (
+                    <PlayerStats
+                      key={player.id}
+                      player={player}
+                      rank={idx + 1}
+                    />
+                  ))}
+            </Grid>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              variant="ghost"
+              mr={3}
+              onClick={() => {
+                onGameEndedModalClose();
+                navigate(`/room/${roomId}/lobby`);
+              }}
+            >
+              Back to Lobby
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

@@ -41,10 +41,7 @@ function App() {
                 <Route path="/how" element={<HowToPlay />} />
                 <Route path="/play" element={<Play />} />
                 <Route path="/room/:roomId" element={<Game />} />
-                <Route
-                  path="/room/:roomId/settings"
-                  element={<GameSettings />}
-                />
+                <Route path="/room/:roomId/lobby" element={<GameSettings />} />
               </Routes>
             </Flex>
           </BrowserRouter>

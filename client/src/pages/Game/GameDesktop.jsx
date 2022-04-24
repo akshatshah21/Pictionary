@@ -1,4 +1,5 @@
 import {
+  Button,
   Flex,
   Grid,
   GridItem,
@@ -6,6 +7,15 @@ import {
   useColorModeValue,
   useDisclosure,
   useToast,
+} from "@chakra-ui/react";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
 } from "@chakra-ui/react";
 import { useState, useEffect, useContext } from "react";
 
@@ -15,6 +25,8 @@ import ChooseWordModal from "../../components/ChooseWordModal";
 import DrawingBoard from "../../components/DrawingBoard";
 import { CurrentPlayerContext, PlayersContext, SocketContext } from "../../App";
 import SecondsTimer from "../../components/SecondsTimer";
+import PlayerStats from "../../components/PlayerStats";
+import { useNavigate, useParams } from "react-router-dom";
 
 const playersSort = (playerA, playerB) => {
   if (playerA.score && playerB.score) {
@@ -32,6 +44,9 @@ function GameDesktop() {
   const scoreBgColor = useColorModeValue("orange.300", "orange.500");
   const headerBgColor = useColorModeValue("purple.300", "purple.700");
 
+  const navigate = useNavigate();
+  const { roomId } = useParams();
+
   const [turnPlayerStatus, setTurnPlayerStatus] = useState("");
   const [turnPlayer, setTurnPlayer] = useState("");
   const [wordOptions, setWordOptions] = useState(null);
@@ -46,6 +61,11 @@ function GameDesktop() {
   const socket = useContext(SocketContext);
   const [players, setPlayers] = useContext(PlayersContext);
   const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
+  const {
+    isOpen: isGameEndedModalOpen,
+    onOpen: onGameEndedModalOpen,
+    onClose: onGameEndedModalClose,
+  } = useDisclosure();
 
   useEffect(() => {
     const onChoosing = ({ name }) => {
@@ -170,6 +190,10 @@ function GameDesktop() {
   useEffect(() => {
     const onEndGame = (stats) => {
       console.log("stats", stats);
+      onGameEndedModalOpen();
+      setTimeout(() => {
+        navigate(`/room/${roomId}/lobby`);
+      }, 10000);
     };
     socket.on("endGame", onEndGame);
 
@@ -262,6 +286,53 @@ function GameDesktop() {
           words={wordOptions}
         />
       )}
+
+      <Modal
+        isOpen={isGameEndedModalOpen}
+        onClose={() => {
+          onGameEndedModalClose();
+          navigate(`/room/${roomId}/lobby`);
+        }}
+        isCentered
+        size="4xl"
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Game Over!</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Grid
+              templateColumns="repeat(auto-fit, minmax(300px, 1fr))"
+              gridGap="2"
+            >
+              {players &&
+                Object.keys(players)
+                  .map((id) => players[id])
+                  .sort(playersSort)
+                  .map((player, idx) => (
+                    <PlayerStats
+                      key={player.id}
+                      player={player}
+                      rank={idx + 1}
+                    />
+                  ))}
+            </Grid>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              variant="ghost"
+              mr={3}
+              onClick={() => {
+                onGameEndedModalClose();
+                navigate(`/room/${roomId}/lobby`);
+              }}
+            >
+              Back to Lobby
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Grid>
   );
 }

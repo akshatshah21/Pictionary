@@ -49,7 +49,9 @@ class Game {
             }
         }
         io.in(socket.roomID).emit('endGame', { stats: games[socket.roomID] });
-        delete games[socket.roomID];
+        // TODO Memory leak! Delete games after some timeout
+        // If game is deleted here, users can't "Play again"
+        // delete games[socket.roomID];
     }
 
     async giveTurnTo(players, i) {

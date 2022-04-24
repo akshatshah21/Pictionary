@@ -58,7 +58,7 @@ class Room {
     updateSettings(data) {
         const { socket } = this;
         const { customWords, ...rest } = data;
-        games[socket.roomID].time = Number(data.time) * 1000;
+        games[socket.roomID].time = Number(data.time);
         games[socket.roomID].rounds = Number(data.rounds);
         games[socket.roomID].probability = Number(data.probability);
         games[socket.roomID].customWords = customWords;

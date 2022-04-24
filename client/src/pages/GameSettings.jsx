@@ -75,7 +75,7 @@ function GameSettings() {
     if (currentPlayer.isAdmin) {
       socket.emit("settingsUpdate", {
         rounds,
-        time: roundTime,
+        time: roundTime * 1000,
         probability: customWordsProb,
         customWords: customWordsText.replace(/\s+/g, " ").trim().split(" "),
         language: language,
@@ -95,7 +95,7 @@ function GameSettings() {
     function onSettingsUpdate(data) {
       console.log(data);
       setRounds(data.rounds);
-      setRoundTime(data.time);
+      setRoundTime(data.time / 1000);
       setCustomWordsProb(data.probability);
       setLanguage(data.language);
     }
@@ -118,7 +118,7 @@ function GameSettings() {
         templateRows="10fr 2fr"
         templateColumns="repeat(2, 1fr)"
         gridGap="4"
-        w={["95vw", "75vw", "50vw"]}
+        w={["95vw", "75vw", "75vw"]}
         bgColor={bgColor}
         p="8"
         rounded="md"
@@ -149,7 +149,6 @@ function GameSettings() {
                 <NumberInput
                   allowMouseWheel
                   isDisabled={!currentPlayer.isAdmin}
-                  defaultValue={DEFAULT_ROUND_TIME}
                   min={10}
                   max={120}
                   step={10}

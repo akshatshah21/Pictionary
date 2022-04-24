@@ -1,8 +1,6 @@
 import { Flex, Image, Text, useColorModeValue } from "@chakra-ui/react";
 
-// TODO Blue border around currentDrawer
-
-function UserScoreItem({ user, rank }) {
+function PlayerStats({ player, rank }) {
   let lightModeBgGradientStart = "white";
   let lightModeBgGradientEnd = "white";
   let darkModeBgGradientStart = "gray.700";
@@ -37,34 +35,24 @@ function UserScoreItem({ user, rank }) {
 
   return (
     <Flex
-      mx="md:2"
-      my="0.5"
-      p="1"
-      rounded="lg"
-      flexDir="row"
-      justify="flex-start"
-      gap="8"
+      key={player.id}
+      flexDir="column"
+      justify="center"
       align="center"
       bgGradient={bgGradient}
+      rounded="md"
     >
-      <Flex align="center">
-        <Text fontSize="sm md:2xl">#{rank}</Text>
-        <Image
-          boxSize="3em"
-          rounded="full"
-          src={user.avatar}
-          alt={`${user.name}'s Avatar`}
-        />
-      </Flex>
-
-      <Flex flexDir="column">
-        <Text fontSize="sm" isTruncated>
-          {user.name}
-        </Text>
-        <Text fontSize="sm">Score: {user.score ? user.score : 0}</Text>
-      </Flex>
+      <Text fontSize="3xl">#{rank}</Text>
+      <Image
+        borderRadius="full"
+        boxSize="5em"
+        src={player.avatar}
+        alt={`${player.name}'s Avatar`}
+      />
+      <Text>{player.name}</Text>
+      <Text>{player.score}</Text>
     </Flex>
   );
 }
 
-export default UserScoreItem;
+export default PlayerStats;

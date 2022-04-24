@@ -74,7 +74,7 @@ function Play() {
       },
     });
 
-    navigate(`/room/${roomCode}/settings`);
+    navigate(`/room/${roomCode}/lobby`);
   };
 
   const createRoom = (data) => {
@@ -94,7 +94,7 @@ function Play() {
     });
 
     socket.on("newPrivateRoom", (data) => {
-      navigate(`/room/${data.gameID}/settings`);
+      navigate(`/room/${data.gameID}/lobby`);
     });
   };
 
@@ -105,7 +105,7 @@ function Play() {
         marginTop="10"
         marginBottom="auto"
         rounded="md"
-        w={["95vw", "75vw", "50vw"]}
+        w={["95vw", "75vw", "75vw"]}
         flexDir="column"
         padding="8"
         bgColor={bgColor}
