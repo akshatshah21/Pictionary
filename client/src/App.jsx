@@ -23,7 +23,7 @@ function App() {
   const playersState = useState(null);
 
   useEffect(() => {
-    const newSocket = io(`http://${window.location.hostname}:5000`); // TODO refactor to ENV var
+    const newSocket = io(`https://pixnry.herokuapp.com/`); // TODO refactor to ENV var
     setSocket(newSocket);
     return () => newSocket.close();
   }, [setSocket]);
