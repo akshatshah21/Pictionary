@@ -37,7 +37,7 @@ function App() {
               <Navbar />
 
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Play />} />
                 <Route path="/how" element={<HowToPlay />} />
                 <Route path="/play" element={<Play />} />
                 <Route path="/room/:roomId" element={<Game />} />
