@@ -19,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import useWindowSize from "react-use/lib/useWindowSize";
 import Confetti from "react-confetti";
 
 import UserScoreList from "../../components/UserScoreList";
@@ -44,6 +45,8 @@ function GameDesktop() {
   const currentDrawerBgColor = useColorModeValue("blue.300", "blue.700");
   const scoreBgColor = useColorModeValue("orange.300", "orange.500");
   const headerBgColor = useColorModeValue("purple.300", "purple.700");
+
+  const { width: windowWidth, height: windowHeight } = useWindowSize();
 
   const navigate = useNavigate();
   const { roomId } = useParams();
@@ -318,13 +321,6 @@ function GameDesktop() {
                     />
                   ))}
             </Grid>
-            {Object.keys(players)
-              .map((id) => players[id])
-              .sort(playersSort)
-              .slice(0, 3)
-              .findIndex((player) => player.id === currentPlayer.id) !== -1 && (
-              <Confetti />
-            )}
           </ModalBody>
 
           <ModalFooter>
@@ -340,6 +336,13 @@ function GameDesktop() {
             </Button>
           </ModalFooter>
         </ModalContent>
+        {Object.keys(players)
+          .map((id) => players[id])
+          .sort(playersSort)
+          .slice(0, 3)
+          .findIndex((player) => player.id === currentPlayer.id) !== -1 && (
+          <Confetti width={windowWidth} height={windowHeight} />
+        )}
       </Modal>
     </Grid>
   );

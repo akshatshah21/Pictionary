@@ -59,11 +59,15 @@ class Room {
   updateSettings(data) {
     const { socket } = this;
     const { customWords, ...rest } = data;
-    games[socket.roomID].time = Number(data.time);
-    games[socket.roomID].rounds = Number(data.rounds);
-    games[socket.roomID].probability = Number(data.probability);
-    games[socket.roomID].customWords = customWords;
-    games[socket.roomID].language = data.language;
+    try {
+      games[socket.roomID].time = Number(data.time);
+      games[socket.roomID].rounds = Number(data.rounds);
+      games[socket.roomID].probability = Number(data.probability);
+      games[socket.roomID].customWords = customWords;
+      games[socket.roomID].language = data.language;
+    } catch (error) {
+      console.log("Game not found");
+    }
     socket.to(socket.roomID).emit("settingsUpdate", rest);
   }
 }
