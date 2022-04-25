@@ -21,6 +21,7 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useWindowSize from "react-use/lib/useWindowSize";
 import Confetti from "react-confetti";
+import useSound from "use-sound";
 
 import UserScoreList from "../../components/UserScoreList";
 import ChatWindow from "../../components/ChatWindow";
@@ -29,6 +30,10 @@ import DrawingBoard from "../../components/DrawingBoard";
 import { CurrentPlayerContext, PlayersContext, SocketContext } from "../../App";
 import SecondsTimer from "../../components/SecondsTimer";
 import PlayerStats from "../../components/PlayerStats";
+import yourTurnAudio from "../../../assets/audio/your-turn.mp3";
+import clockAudio from "../../../assets/audio/clock.mp3";
+import hintAudio from "../../../assets/audio/hint.mp3";
+import timerStartAudio from "../../../assets/audio/timer-start.mp3";
 
 const playersSort = (playerA, playerB) => {
   if (playerA.score && playerB.score) {
@@ -47,6 +52,11 @@ function GameDesktop() {
   const headerBgColor = useColorModeValue("purple.300", "purple.700");
 
   const { width: windowWidth, height: windowHeight } = useWindowSize();
+
+  const [playYourTurnAudio] = useSound(yourTurnAudio);
+  const [playClockAudio] = useSound(clockAudio);
+  const [playHintAudio] = useSound(hintAudio);
+  const [playTimerStartAudio] = useSound(timerStartAudio);
 
   const navigate = useNavigate();
   const { roomId } = useParams();
@@ -76,11 +86,14 @@ function GameDesktop() {
       console.log("Choosing word:", name);
       setTurnPlayer(name);
       setTurnPlayerStatus("is choosing a word");
+      if (name === currentPlayer.name) {
+        playYourTurnAudio();
+      }
     };
     socket.on("choosing", onChoosing);
 
     return () => socket.off("choosing", onChoosing);
-  }, [socket, setTurnPlayerStatus]);
+  }, [socket, setTurnPlayerStatus, playYourTurnAudio, currentPlayer]);
 
   const {
     isOpen: isChooseWordModalOpen,
@@ -114,7 +127,7 @@ function GameDesktop() {
   useEffect(() => {
     const effectsWithTime = {
       0: [() => console.log("Timer over")],
-      10: [() => console.log("10 secs left")],
+      10: [() => console.log("10 secs left"), () => playClockAudio()],
     };
     setEffectsWithTime(() => {
       hints &&
@@ -125,19 +138,27 @@ function GameDesktop() {
           } else {
             effectsWithTime[hint.displayTime] = [updateHint];
           }
+          effectsWithTime[hint.displayTime].push(playHintAudio);
         });
       return effectsWithTime;
     });
-  }, [hints, setDisplayedHint, setEffectsWithTime]);
+  }, [
+    hints,
+    setDisplayedHint,
+    setEffectsWithTime,
+    playClockAudio,
+    playHintAudio,
+  ]);
 
   useEffect(() => {
     const onStartTimer = ({ time }) => {
       setRoundTime(time);
+      playTimerStartAudio();
     };
     socket.on("startTimer", onStartTimer);
 
     return () => socket.off("startTimer", onStartTimer);
-  }, [socket, setRoundTime]);
+  }, [socket, setRoundTime, playTimerStartAudio]);
 
   useEffect(() => {
     const onUpdateScore = ({

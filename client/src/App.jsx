@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { createContext, useState, useEffect } from "react";
 import { io } from "socket.io-client";
+import { Flex, useColorModeValue } from "@chakra-ui/react";
 
 import Navbar from "./components/Navbar";
 import Game from "./pages/Game";
@@ -8,9 +9,8 @@ import GameSettings from "./pages/GameSettings";
 import Home from "./pages/Home";
 import HowToPlay from "./pages/HowToPlay";
 import Play from "./pages/Play";
-import bgLight from "./bg-light.png";
-import bgDark from "./bg-dark.png";
-import { Flex, useColorModeValue } from "@chakra-ui/react";
+import bgLight from "../assets/img/bg-light.png";
+import bgDark from "../assets/img/bg-dark.png";
 
 export const SocketContext = createContext();
 export const PlayersContext = createContext();

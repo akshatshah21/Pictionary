@@ -27,7 +27,8 @@
     "react-router-dom": "^6.3.0",
     "react-sketch-canvas": "^6.1.5",
     "react-use": "^17.3.2",
-    "socket.io-client": "^4.4.1"
+    "socket.io-client": "^4.4.1",
+    "use-sound": "^4.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

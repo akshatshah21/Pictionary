@@ -17,9 +17,13 @@ import {
 import { useContext, useEffect } from "react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import useSound from "use-sound";
+
 import { CurrentPlayerContext, PlayersContext, SocketContext } from "../App";
 import { RoomUser } from "../components/RoomUser";
 import { SliderThumbWithTooltip } from "../components/SliderThumbWithTooltip";
+import exitAudio from "../../assets/audio/exit.mp3";
+import joinAudio from "../../assets/audio/pop.mp3";
 
 const LANGUAGES = [
   { value: "english", name: "English" },
@@ -43,8 +47,11 @@ function GameSettings() {
   );
 
   const socket = useContext(SocketContext);
-  const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
+  const [currentPlayer] = useContext(CurrentPlayerContext);
   const [players, setPlayers] = useContext(PlayersContext);
+
+  const [playExitAudio] = useSound(exitAudio);
+  const [playJoinAudio] = useSound(joinAudio);
 
   useEffect(() => {
     socket.once("otherPlayers", (otherPlayers) => {
@@ -62,14 +69,26 @@ function GameSettings() {
 
     function onPlayerJoin(player) {
       setPlayers((prev) => ({ ...prev, [player.id]: player }));
+      playJoinAudio();
     }
 
     socket.on("joinRoom", onPlayerJoin);
 
     return () => socket.off("joinRoom", onPlayerJoin);
-  }, [socket, setPlayers, currentPlayer]);
+  }, [socket, setPlayers, currentPlayer, playJoinAudio]);
 
-  // TODO probably add listener for leaveRoom to update users
+  useEffect(() => {
+    const onUserLeave = (player) => {
+      setPlayers((prev) => {
+        delete prev[player.id];
+        return { ...prev }; // cryptic, but necessary, apparently
+      });
+      playExitAudio();
+    };
+    socket.on("disconnection", onUserLeave);
+
+    return () => socket.off("disconnection", onUserLeave);
+  }, [socket, playExitAudio, setPlayers]);
 
   useEffect(() => {
     if (currentPlayer.isAdmin) {

@@ -8,14 +8,18 @@ import {
 import { useContext } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import { SocketContext } from "../../App";
+import useSound from "use-sound";
 
+import { SocketContext } from "../../App";
 import Message from "./Message";
+import correctAudio from "../../../assets/audio/correct.mp3";
 
 function ChatWindow({ inputDisabled }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const socket = useContext(SocketContext);
+
+  const [playCorrectAudio] = useSound(correctAudio);
 
   const inputBgColor = useColorModeValue("white", "gray.700");
 
@@ -37,12 +41,15 @@ function ChatWindow({ inputDisabled }) {
 
   useEffect(() => {
     const onCorrectGuess = (message) => {
+      if (message.id === socket.id) {
+        playCorrectAudio();
+      }
       setMessages((prev) => [...prev, message]);
     };
     socket.on("correctGuess", onCorrectGuess);
 
     return () => socket.off("correctGuess", onCorrectGuess);
-  }, [socket, setMessages]);
+  }, [socket, setMessages, playCorrectAudio]);
 
   useEffect(() => {
     const onCloseGuess = (message) => {
@@ -58,7 +65,7 @@ function ChatWindow({ inputDisabled }) {
       <Flex flexDir="column" overflow="auto" id="message-list">
         {messages.map((message) => (
           <Message
-            key={message.timestamp}
+            key={message.timestamp + message.id + message.content}
             content={message.content}
             user={message.name}
             type={message.type}
