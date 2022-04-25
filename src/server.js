@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const { EventEmitter } = require("events");
 const bodyParser = require("body-parser");
 const sockets = require("./socket");
@@ -20,6 +21,8 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+app.use(express.static(path.join(__dirname, "../client/dist")));
+
 // Bodyparser middleware
 app.use(
   bodyParser.urlencoded({
@@ -29,9 +32,7 @@ app.use(
 app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
-  // const roomID = req.query.id;
-  // res.render('index', { roomID });
-  return res.json("hello");
+  res.sendFile(path.join(__dirname, "../client/dist/index.html"));
 });
 
 const server = app.listen(process.env.PORT || 5000, process.env.IP, () => {
