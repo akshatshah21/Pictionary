@@ -23,7 +23,7 @@ function App() {
   const playersState = useState(null);
 
   useEffect(() => {
-    const newSocket = io(`http://${window.location.hostname}:5000`); // TODO refactor to ENV var
+    const newSocket = io(`${import.meta.env.VITE_BACKEND_URL}`); // TODO refactor to ENV var
     setSocket(newSocket);
     return () => newSocket.close();
   }, [setSocket]);

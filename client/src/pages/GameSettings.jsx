@@ -13,6 +13,7 @@ import {
   Select,
   Textarea,
   useColorModeValue,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { useContext, useEffect } from "react";
 import { useState } from "react";
@@ -132,20 +133,19 @@ function GameSettings() {
   }, [socket, navigate, roomCode]);
 
   return (
-    <Flex h="75vh" marginTop="10vh" justifyContent="center">
-      <Grid
-        templateRows="10fr 2fr"
-        templateColumns="repeat(2, 1fr)"
+    <Flex h={["100%", "100%", "75vh"]} marginTop="10vh" justifyContent="center">
+      <SimpleGrid
+        columns={["1", "1", "2"]}
         gridGap="4"
-        w={["95vw", "85vw", "50vw"]}
+        w={["95vw", "85vw", "60vw"]}
         bgColor={bgColor}
         p="8"
         rounded="md"
       >
-        <GridItem w="100%" h="100%">
+        <GridItem w="100%" h="90%">
           <Flex flexDir="column">
             <FormControl>
-              <Flex justify="space-between" my="4">
+              <Flex justify="space-between" my="2">
                 <FormLabel htmlFor="rounds">Number of Rounds</FormLabel>
                 <NumberInput
                   allowMouseWheel
@@ -157,13 +157,13 @@ function GameSettings() {
                   onChange={(value) => setRounds(Number(value))}
                 >
                   <NumberInputField />
-                  <NumberInputStepper>
+                  <NumberInputStepper >
                     <NumberIncrementStepper />
                     <NumberDecrementStepper />
                   </NumberInputStepper>
                 </NumberInput>
               </Flex>
-              <Flex justify="space-between" my="4">
+              <Flex justify="space-between" my="2">
                 <FormLabel htmlFor="seconds">Seconds per Round</FormLabel>
                 <NumberInput
                   allowMouseWheel
@@ -181,7 +181,7 @@ function GameSettings() {
                   </NumberInputStepper>
                 </NumberInput>
               </Flex>
-              <Flex justify="space-between" my="4">
+              <Flex justify="space-between" my="2">
                 <FormLabel>Language</FormLabel>
                 <Select
                   isDisabled={!currentPlayer.isAdmin}
@@ -203,7 +203,7 @@ function GameSettings() {
                   value={customWordsText}
                   onChange={(e) => setCustomWordsText(e.target.value)}
                   placeholder="supercalifragilisticexpialidocious sesquipedalophobia hippopotomonstrosesquippedaliophobia bob"
-                  rows={10}
+                  rows={5}
                   resize="none"
                 />
               </Flex>
@@ -229,7 +229,7 @@ function GameSettings() {
             </FormControl>
           </Flex>
         </GridItem>
-        <GridItem w="100%" h="100%" overflow="auto">
+        <GridItem w="100%" h="90%" overflow="auto">
           <Grid templateColumns="repeat(4, 1fr)" gridGap="2">
             {players &&
               Object.keys(players).map((id) => (
@@ -238,10 +238,8 @@ function GameSettings() {
           </Grid>
         </GridItem>
 
-        <GridItem w="100%" h="fit-content" colSpan="2">
-          Share link
-        </GridItem>
-      </Grid>
+      {/* TODO Share link */}
+      </SimpleGrid>
     </Flex>
   );
 }
