@@ -4,11 +4,6 @@ import {
   GridItem,
   FormControl,
   FormLabel,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Button,
   Select,
   Textarea,
@@ -146,40 +141,30 @@ function GameSettings() {
           <Flex flexDir="column">
             <FormControl>
               <Flex justify="space-between" my="2">
-                <FormLabel htmlFor="rounds">Number of Rounds</FormLabel>
-                <NumberInput
-                  allowMouseWheel
-                  isDisabled={!currentPlayer.isAdmin}
-                  defaultValue={DEFAULT_ROUNDS}
+                <FormLabel htmlFor="rounds" w="xs">
+                  Number of Rounds: {rounds}
+                </FormLabel>
+                <SliderThumbWithTooltip
+                  initialValue={DEFAULT_ROUNDS}
                   min={1}
+                  max={10}
                   step={1}
-                  value={rounds}
-                  onChange={(value) => setRounds(Number(value))}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper >
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
+                  isDisabled={!currentPlayer.isAdmin}
+                  onChangeEnd={(value) => setRounds(Number(value))}
+                />
               </Flex>
               <Flex justify="space-between" my="2">
-                <FormLabel htmlFor="seconds">Seconds per Round</FormLabel>
-                <NumberInput
-                  allowMouseWheel
-                  isDisabled={!currentPlayer.isAdmin}
+                <FormLabel htmlFor="seconds" w="xs">
+                  Seconds per Round: {roundTime}
+                </FormLabel>
+                <SliderThumbWithTooltip
+                  initialValue={DEFAULT_ROUND_TIME}
                   min={10}
-                  max={120}
+                  max={100}
                   step={10}
-                  value={roundTime}
-                  onChange={(value) => setRoundTime(Number(value))}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
+                  isDisabled={!currentPlayer.isAdmin}
+                  onChangeEnd={(value) => setRoundTime(Number(value))}
+                />
               </Flex>
               <Flex justify="space-between" my="2">
                 <FormLabel>Language</FormLabel>
@@ -210,6 +195,10 @@ function GameSettings() {
               <FormLabel>Probability of Custom Words</FormLabel>
               <SliderThumbWithTooltip
                 initialValue={DEFAULT_CUSTOM_WORDS_PROB}
+                min={0}
+                max={100}
+                step={5}
+                sliderMarks={[25, 50, 75]}
                 isDisabled={!currentPlayer.isAdmin}
                 onChangeEnd={(percent) => setCustomWordsProb(percent / 100)}
               />
@@ -238,7 +227,7 @@ function GameSettings() {
           </Grid>
         </GridItem>
 
-      {/* TODO Share link */}
+        {/* TODO Share link */}
       </SimpleGrid>
     </Flex>
   );

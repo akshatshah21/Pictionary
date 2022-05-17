@@ -10,6 +10,10 @@ import { useState } from "react";
 
 export function SliderThumbWithTooltip({
   initialValue,
+  max,
+  min,
+  step,
+  sliderMarks,
   onChangeEnd,
   isDisabled,
 }) {
@@ -17,35 +21,36 @@ export function SliderThumbWithTooltip({
   const [showTooltip, setShowTooltip] = useState(false);
   return (
     <Slider
-      id="slider"
       isDisabled={isDisabled}
       defaultValue={initialValue}
-      min={1}
-      max={100}
+      min={min}
+      max={max}
+      step={step ? step : 1}
       onChange={(v) => setSliderValue(v)}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
       onChangeEnd={onChangeEnd}
     >
-      <SliderMark value={25} mt="1" ml="-2.5" fontSize="sm">
-        25%
-      </SliderMark>
-      <SliderMark value={50} mt="1" ml="-2.5" fontSize="sm">
-        50%
-      </SliderMark>
-      <SliderMark value={75} mt="1" ml="-2.5" fontSize="sm">
-        75%
-      </SliderMark>
+      {sliderMarks &&
+        sliderMarks.map((sliderMark) => (
+          <SliderMark
+            key={sliderMark}
+            value={sliderMark}
+            mt="1"
+            ml="-2.5"
+            fontSize="sm"
+          >
+            {sliderMark}
+          </SliderMark>
+        ))}
       <SliderTrack>
         <SliderFilledTrack />
       </SliderTrack>
       <Tooltip
         hasArrow
-        bgColor="blue"
-        colorScheme="blue"
         placement="top"
         isOpen={showTooltip}
-        label={`${sliderValue}%`}
+        label={sliderValue}
       >
         <SliderThumb />
       </Tooltip>
