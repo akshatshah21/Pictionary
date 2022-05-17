@@ -32,7 +32,7 @@ function DrawingBoard({ canvasEnabled }) {
 
   useEffect(() => {
     const onDrawing = (data) => {
-      canvasRef.current.loadPaths(data["canvasBase64"]);
+      canvasRef.current.loadPaths(data["canvasPath"]);
     };
     socket.on("drawing", onDrawing);
 
@@ -48,9 +48,9 @@ function DrawingBoard({ canvasEnabled }) {
     return () => socket.off("clearCanvas", onClearCanvas);
   });
 
-  async function updateCanvas() {
+  async function updateCanvas(data) {
     socket.emit("drawing", {
-      canvasBase64: await canvasRef.current.exportPaths(),
+      canvasPath: data,
     });
   }
 

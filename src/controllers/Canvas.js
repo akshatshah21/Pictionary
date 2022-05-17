@@ -6,12 +6,12 @@ class Canvas {
 
   broadcastDrawing(data) {
     const { socket } = this;
-    socket.broadcast.to(socket.roomID).emit("drawing", data);
+    socket.to(socket.roomID).emit("drawing", data);
   }
 
   clearCanvas() {
     const { socket } = this;
-    socket.broadcast.to(socket.roomID).emit("clearCanvas");
+    socket.to(socket.roomID).emit("clearCanvas");
   }
 }
 
