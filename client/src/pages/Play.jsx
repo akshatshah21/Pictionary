@@ -6,6 +6,7 @@ import {
   Input,
   Text,
   useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import { FormControl, FormLabel, FormHelperText } from "@chakra-ui/react";
 import { PinInput, PinInputField } from "@chakra-ui/react";
@@ -34,6 +35,8 @@ function Play() {
   const [currentPlayer, setCurrentPlayer] = useContext(CurrentPlayerContext);
   const [players, setPlayers] = useContext(PlayersContext);
 
+  const toast = useToast();
+
   const {
     register,
     handleSubmit,
@@ -57,6 +60,9 @@ function Play() {
   const [roomCode, setRoomCode] = useState("");
 
   const joinRoom = () => {
+    if (!roomCode.trim()) {
+      return;
+    }
     const username = getValues("username");
     setCurrentPlayer({
       id: socket.id,
@@ -64,6 +70,28 @@ function Play() {
       avatar,
       isAdmin: false,
     });
+
+    function onValidRoom({ gameID }) {
+      toast({
+        title: "Joining room...",
+        description: "Get ready!",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
+      navigate(`/room/${gameID}/lobby`);
+    }
+
+    function onInvalidRoom({ message }) {
+      toast({
+        title: message,
+        description: "Check the room code and try again!",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+      });
+      socket.off("validRoom", onValidRoom);
+    }
 
     socket.emit("joinRoom", {
       id: roomCode,
@@ -74,7 +102,8 @@ function Play() {
       },
     });
 
-    navigate(`/room/${roomCode}/lobby`);
+    socket.once("invalidRoom", onInvalidRoom);
+    socket.once("validRoom", onValidRoom);
   };
 
   const createRoom = (data) => {

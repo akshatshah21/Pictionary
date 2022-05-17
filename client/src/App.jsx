@@ -6,7 +6,6 @@ import { Flex, useColorModeValue } from "@chakra-ui/react";
 import Navbar from "./components/Navbar";
 import Game from "./pages/Game";
 import GameSettings from "./pages/GameSettings";
-import Home from "./pages/Home";
 import HowToPlay from "./pages/HowToPlay";
 import Play from "./pages/Play";
 import bgLight from "../assets/img/bg-light.png";
@@ -23,7 +22,7 @@ function App() {
   const playersState = useState(null);
 
   useEffect(() => {
-    const newSocket = io(`${import.meta.env.VITE_BACKEND_URL}`); // TODO refactor to ENV var
+    const newSocket = io(`${import.meta.env.VITE_BACKEND_URL}`);
     setSocket(newSocket);
     return () => newSocket.close();
   }, [setSocket]);

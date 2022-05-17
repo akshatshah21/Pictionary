@@ -32,6 +32,14 @@ class Room {
     const { io, socket } = this;
     const roomID = data.id;
     const players = Array.from(await io.in(roomID).allSockets());
+
+    // TODO temp fix
+    if (!players || !players.length) {
+      socket.emit("invalidRoom", { message: "Invalid Room Code" });
+      return;
+    }
+    socket.emit("validRoom", { gameID: data.id });
+
     games[roomID][socket.id] = {};
     games[roomID][socket.id].score = 0;
     games[roomID][socket.id].name = data.player.name;
