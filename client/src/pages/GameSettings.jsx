@@ -5,6 +5,7 @@ import {
   FormControl,
   FormLabel,
   Button,
+  Heading,
   Select,
   Textarea,
   useColorModeValue,
@@ -36,6 +37,8 @@ function GameSettings() {
   const [rounds, setRounds] = useState(DEFAULT_ROUNDS);
   const [roundTime, setRoundTime] = useState(DEFAULT_ROUND_TIME);
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE.value);
+
+  const { roomId } = useParams();
 
   const [customWordsText, setCustomWordsText] = useState("");
   const [customWordsProb, setCustomWordsProb] = useState(
@@ -139,6 +142,7 @@ function GameSettings() {
       >
         <GridItem w="100%" h="90%">
           <Flex flexDir="column">
+            <Heading>Room Code: {roomId}</Heading>
             <FormControl>
               <Flex justify="space-between" my="2">
                 <FormLabel htmlFor="rounds" w="xs">
