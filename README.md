@@ -2,7 +2,6 @@
 
 A web-app for the game we all love and enjoy.
 
-
 <p align="center">
   
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)]()
@@ -17,73 +16,73 @@ A web-app for the game we all love and enjoy.
 
 ## Demo
 
-The game is hosted on [Heroku](https://pixnry.herokuapp.com/). 
+The game is hosted on [Heroku](https://pixnry.herokuapp.com/).
 However, there's a noticeable time lag during the rounds currently. We hope to solve this soon!
 
-
 ## Tech Stack
+
 ### Server
-* Node.js
-* Socket.IO
-* Express
-* Nanoid
-* Chance
-* Leven
+
+- Node.js
+- Socket.IO
+- Express
+- Nanoid
+- Chance
+- Leven
 
 ### Client
-* React
-* React Router
-* Socket.IO Client
-* Chakra UI
-* Vite
-* React Sketch Canvas
-* Use Sound
 
+- React
+- React Router
+- Socket.IO Client
+- Chakra UI
+- Vite
+- React Sketch Canvas
+- Use Sound
 
 ## Installation
 
-* Clone this repository:
-    ```bash
-    git clone https://github.com/akshatshah21/Pictionary.git
-    cd Pictionary
-    ```
-* Install server dependencies:
-    ```bash
-    npm install
-    ```
-* Install client dependencies:
-    ```bash
-    cd client
-    npm install
-    ```
-* Start the server (in the root of the repository):
-    ```bash
-    npm start
-    ```
-    Use `npm run dev` for the development server.
-* Start serving the client:
-    ```bash
-    npm run dev
-    ```
+- Clone this repository:
+  ```bash
+  git clone https://github.com/akshatshah21/Pictionary.git
+  cd Pictionary
+  ```
+- Install server dependencies:
+  ```bash
+  npm install
+  ```
+- Install client dependencies:
+  ```bash
+  cd client
+  npm install
+  ```
+- Start the server (in the root of the repository):
+  ```bash
+  npm start
+  ```
+  Use `npm run dev` for the development server.
+- Start serving the client:
+  ```bash
+  npm run dev
+  ```
 
 Open [http://localhost:3000](http://localhost:3000)!
-    
+
 ## Screenshots
-![[Pasted image 20220518163617.png]]
-![[Pasted image 20220518163719.png]]
-![[Pasted image 20220518163830.png]]
-![[Pasted image 20220518163837.png]]
-![[Pasted image 20220518164218.png]]
-![[Pasted image 20220518164240.png]]
-![[Pasted image 20220518164327.png]]
+
+![1](/assets/1.png)  
+![2](/assets/2.png)  
+![3](/assets/3.png)  
+![4](/assets/4.png)  
+![5](/assets/5.png)  
+![6](/assets/6.png)  
+![7](/assets/7.png)
 
 ## Authors
 
 - [Akshat Shah](https://www.github.com/akshatshah21)
 - [Ganadhish Acharekar](https://www.github.com/ganadhish1999)
 
-
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
-
