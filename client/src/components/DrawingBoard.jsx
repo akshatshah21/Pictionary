@@ -1,5 +1,5 @@
 import { useContext, useState, useRef, useEffect } from "react";
-import { Flex, Button, Stack } from "@chakra-ui/react";
+import { Flex, Button, SimpleGrid } from "@chakra-ui/react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
 import { SocketContext } from "../App";
 import { BsEraserFill } from "react-icons/bs";
@@ -78,7 +78,7 @@ function DrawingBoard({ canvasEnabled }) {
         onStroke={updateCanvas}
       />
       {canvasEnabled && (
-        <Stack spacing={2} direction="row" align="center" m="10px">
+        <SimpleGrid minChildWidth="50px" spacing={2} align="center" m="10px">
           {colorClasses.map((color) => (
             <Button
               key={color}
@@ -141,7 +141,7 @@ function DrawingBoard({ canvasEnabled }) {
           >
             <GoPrimitiveDot size="3em" />
           </Button>
-        </Stack>
+        </SimpleGrid>
       )}
     </Flex>
   );
