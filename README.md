@@ -68,6 +68,15 @@ However, there's a noticeable time lag during the rounds currently. We hope to s
 
 Open [http://localhost:3000](http://localhost:3000)!
     
+## Screenshots
+![[Pasted image 20220518163617.png]]
+![[Pasted image 20220518163719.png]]
+![[Pasted image 20220518163830.png]]
+![[Pasted image 20220518163837.png]]
+![[Pasted image 20220518164218.png]]
+![[Pasted image 20220518164240.png]]
+![[Pasted image 20220518164327.png]]
+
 ## Authors
 
 - [Akshat Shah](https://www.github.com/akshatshah21)
